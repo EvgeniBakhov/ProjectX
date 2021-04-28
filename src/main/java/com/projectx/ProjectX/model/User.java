@@ -1,39 +1,41 @@
 package com.projectx.ProjectX.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.util.UUID;
+import com.projectx.ProjectX.enums.UserType;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "user")
+@Getter
+@Setter
 public class User {
     @Id
     private Long id;
-    private String name;
+
+    @Column(name = "first_name")
+    private String fname;
+
+    @Column(name = "last_name")
+    private String lname;
+
+    @Column(name = "email")
     private String email;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "password")
+    private String password;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(name = "phone")
+    private String phone;
 
-    public String getName() {
-        return name;
-    }
+    @Column(name = "type")
+    private UserType type;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    @Column(name = "picture")
+    private String picture;
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    private Address address;
 }
