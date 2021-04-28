@@ -21,6 +21,6 @@ public class UserController {
 
     @GetMapping(value = "/test")
     public String test() {
-        return "Hey, it's test of a good ass site. Get out of here! Click here: https://www.youtube.com/watch?v=WPkMUU9tUqk";
+        return "Test";
     }
 }
