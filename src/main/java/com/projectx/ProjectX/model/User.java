@@ -30,6 +30,7 @@ public class User {
     private String phone;
 
     @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private UserType type;
 
     @Column(name = "picture")
