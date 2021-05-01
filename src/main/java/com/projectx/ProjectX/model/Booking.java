@@ -1,5 +1,6 @@
 package com.projectx.ProjectX.model;
 
+import com.projectx.ProjectX.enums.BookingStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(name = "booking")
 @Getter
 @Setter
 public class Booking extends BaseEntity {
@@ -32,4 +34,8 @@ public class Booking extends BaseEntity {
     @ManyToOne()
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status;
 }

@@ -1,10 +1,18 @@
 package com.projectx.ProjectX.model;
 
+import com.projectx.ProjectX.enums.EsrbRestrictions;
+import com.projectx.ProjectX.enums.EventPlaceType;
+import com.projectx.ProjectX.enums.EventType;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "event")
+@Getter
+@Setter
 public class Event extends BaseEntity {
     @Id
     @SequenceGenerator(name = "event_seq", sequenceName = "event_seq")
@@ -23,6 +31,16 @@ public class Event extends BaseEntity {
     @Column(name = "end_date")
     private Date endDate;
 
+    @Column(name = "capacity")
+    private int capacity;
+
+    @Column(name = "available_seats")
+    private int availableSeats;
+
+    @Column(name = "age_restrictions")
+    @Enumerated(EnumType.STRING)
+    private EsrbRestrictions ageRestrictions;
+
     @OneToOne()
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
@@ -30,4 +48,13 @@ public class Event extends BaseEntity {
     @ManyToOne()
     @JoinColumn(name = "organizer_id", referencedColumnName = "id")
     private User user;
+
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private EventType type;
+
+    @Column(name = "place_type")
+    @Enumerated(EnumType.STRING)
+    private EventPlaceType placeType;
 }
+
