@@ -12,3 +12,5 @@ spring:
   security:
     filter:
       order: 10
+jwt:
+  secret: projectx
