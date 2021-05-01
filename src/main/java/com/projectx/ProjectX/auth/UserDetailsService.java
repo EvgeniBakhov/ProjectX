@@ -1,4 +1,4 @@
-package com.projectx.ProjectX.service;
+package com.projectx.ProjectX.auth;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
