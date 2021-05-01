@@ -10,15 +10,17 @@ import javax.persistence.*;
 @Table(name = "user")
 @Getter
 @Setter
-public class User {
+public class User extends BaseEntity {
     @Id
+    @SequenceGenerator(name = "user_seq", sequenceName = "user_seq")
+    @GeneratedValue(generator = "user_seq")
     private Long id;
 
     @Column(name = "first_name")
-    private String fname;
+    private String firstName;
 
     @Column(name = "last_name")
-    private String lname;
+    private String lastName;
 
     @Column(name = "email")
     private String email;

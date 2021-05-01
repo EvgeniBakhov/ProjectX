@@ -10,8 +10,10 @@ import lombok.Setter;
 @Table(name = "estate")
 @Getter
 @Setter
-public class Estate {
+public class Estate extends BaseEntity {
     @Id
+    @SequenceGenerator(name = "estate_seq", sequenceName = "estate_seq")
+    @GeneratedValue(generator = "estate_seq")
     private Long id;
 
     @OneToOne(cascade = CascadeType.ALL)
