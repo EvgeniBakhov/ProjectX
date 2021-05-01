@@ -2,6 +2,7 @@ package com.projectx.ProjectX.model;
 
 import com.projectx.ProjectX.enums.EsrbRestrictions;
 import com.projectx.ProjectX.enums.EventPlaceType;
+import com.projectx.ProjectX.enums.EventStatus;
 import com.projectx.ProjectX.enums.EventType;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,5 +57,8 @@ public class Event extends BaseEntity {
     @Column(name = "place_type")
     @Enumerated(EnumType.STRING)
     private EventPlaceType placeType;
+
+    @Column(name = "status")
+    private EventStatus status;
 }
 
