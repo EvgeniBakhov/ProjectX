@@ -17,8 +17,8 @@ public class Booking extends BaseEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", referencedColumnName = "id")
-    private User owner;
+    @JoinColumn(name = "estate_id", referencedColumnName = "id")
+    private Estate estate;
 
     @Column(name = "from_date")
     private Date fromDate;
