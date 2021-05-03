@@ -20,7 +20,7 @@ public class User extends BaseEntity implements UserDetails {
     @GeneratedValue(generator = "user_seq")
     private Long id;
 
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     @NotNull
     private String username;
 
@@ -33,21 +33,22 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "age")
     private int age;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "password")
     private String password;
 
-    @Column(name = "phone")
+    @Column(name = "phone", unique = true)
     private String phone;
 
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private UserType type;
 
-    @Column(name = "picture")
-    private String picture;
+    @OneToOne()
+    @JoinColumn(name = "picture", referencedColumnName = "id")
+    private Picture picture;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")

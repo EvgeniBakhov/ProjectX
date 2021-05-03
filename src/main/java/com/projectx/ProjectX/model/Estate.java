@@ -6,6 +6,8 @@ import com.projectx.ProjectX.enums.EstateType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "estate")
 @Getter
@@ -39,4 +41,7 @@ public class Estate extends BaseEntity {
 
     @Column(name = "description")
     private String description;
+
+    @OneToMany
+    private List<Picture> pictures;
 }

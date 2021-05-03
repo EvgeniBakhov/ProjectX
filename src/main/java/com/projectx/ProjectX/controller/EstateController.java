@@ -1,9 +1,12 @@
 package com.projectx.ProjectX.controller;
 
 import com.projectx.ProjectX.model.Estate;
+import com.projectx.ProjectX.model.User;
+import com.projectx.ProjectX.model.resource.EstateUpdateResource;
 import com.projectx.ProjectX.service.EstateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
@@ -16,12 +19,19 @@ public class EstateController {
     @Autowired
     EstateService estateService;
 
-    @PutMapping()
+    @PostMapping()
     public ResponseEntity<Void> publishEstate(@RequestBody Estate estate) {
         if(estateService.publishEstate(estate)) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    @PutMapping(value = "/{estateId}")
+    public ResponseEntity<Estate> updateEstateDetails(@RequestBody EstateUpdateResource resource,
+                                                      @PathVariable Long estateId,
+                                                      @AuthenticationPrincipal User user) {
+        return ResponseEntity.of(estateService.updateEstateDetails(estateId, resource, user));
     }
 
     @GetMapping("/{estateId}")

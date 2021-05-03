@@ -1,6 +1,8 @@
 package com.projectx.ProjectX.service;
 
 import com.projectx.ProjectX.model.Estate;
+import com.projectx.ProjectX.model.User;
+import com.projectx.ProjectX.model.resource.EstateUpdateResource;
 import com.projectx.ProjectX.repository.EstateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,5 +43,9 @@ public class EstateService {
             return Optional.empty();
         }
         return estates;
+    }
+
+    public Optional<Estate> updateEstateDetails(Long id, EstateUpdateResource resource, User principal) {
+        return null;
     }
 }

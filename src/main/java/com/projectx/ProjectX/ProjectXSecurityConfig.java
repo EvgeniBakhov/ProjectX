@@ -63,7 +63,7 @@ public class ProjectXSecurityConfig extends WebSecurityConfigurerAdapter {
 
         //Permit some endpoints without authentication
         http.authorizeRequests()
-                .antMatchers("/register").permitAll()
+                .antMatchers("/user/signup").permitAll()
                 .antMatchers("/login").permitAll()
                 .antMatchers(HttpMethod.GET, "/estate/**").permitAll()
                 .antMatchers(HttpMethod.GET, "user/**").permitAll()

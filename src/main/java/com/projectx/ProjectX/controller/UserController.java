@@ -1,28 +1,56 @@
 package com.projectx.ProjectX.controller;
 
 import com.projectx.ProjectX.model.User;
+import com.projectx.ProjectX.model.resource.UserResponseResource;
+import com.projectx.ProjectX.model.resource.UserUpdateResource;
 import com.projectx.ProjectX.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping(value = "/user")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @PreAuthorize("permitAll()")
-    @PutMapping(value = "/register")
-    public void registerUser(@RequestBody User user) {
-        userService.register(user);
+    @PostMapping(value = "/signup")
+    public ResponseEntity<User> registerUser(@RequestBody User user) {
+        try {
+            User response = userService.register(user);
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping(value = "/test")
     public String test() {
         return "Test";
     }
+
+    @PutMapping()
+    public ResponseEntity<Void> updateUserDetails(@RequestBody UserUpdateResource resource,
+                                                  @AuthenticationPrincipal User user) {
+        try {
+            userService.updateUserProfile(user, resource);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/{userId}")
+    public ResponseEntity<UserResponseResource> getUserById(@PathVariable Long userId) {
+        UserResponseResource response = userService.findUserById(userId);
+        return ResponseEntity.ok().body(response);
+    }
+
 }
