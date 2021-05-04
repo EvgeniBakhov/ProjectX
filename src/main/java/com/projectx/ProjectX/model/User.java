@@ -54,6 +54,12 @@ public class User extends BaseEntity implements UserDetails {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
+    @Column(name = "email_verified")
+    private boolean emailVerified;
+
+    @Column
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

@@ -1,4 +1,4 @@
-package com.projectx.ProjectX;
+package com.projectx.ProjectX.config;
 
 import com.projectx.ProjectX.auth.JwtTokenFilter;
 import com.projectx.ProjectX.repository.UserRepository;
