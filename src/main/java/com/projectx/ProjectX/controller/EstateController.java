@@ -6,6 +6,7 @@ import com.projectx.ProjectX.model.resource.EstateUpdateResource;
 import com.projectx.ProjectX.service.EstateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ public class EstateController {
     @Autowired
     EstateService estateService;
 
+    @PreAuthorize("hasAuthority('PUBLISH_ESTATE')")
     @PostMapping()
     public ResponseEntity<Void> publishEstate(@RequestBody Estate estate) {
         if(estateService.publishEstate(estate)) {

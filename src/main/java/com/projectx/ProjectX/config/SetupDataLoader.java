@@ -103,6 +103,9 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         }
         Privilege privilege = new Privilege();
         privilege.setName(name);
-
+        privilege.setCreatedBy("system");
+        privilege.setModifiedBy("system");
+        privilegeRepository.save(privilege);
+        return privilege;
     }
 }

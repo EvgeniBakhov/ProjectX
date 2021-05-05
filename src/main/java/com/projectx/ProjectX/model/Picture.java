@@ -6,6 +6,7 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "picture")
 @Getter
 @Setter
 public class Picture{
@@ -13,8 +14,10 @@ public class Picture{
     @SequenceGenerator(name = "picture_seq", sequenceName = "picture_seq")
     @GeneratedValue(generator = "picture_seq")
     private long id;
+
     @Column(name = "url")
     private String url;
-    @Column(name = "order")
-    private Integer order;
+
+    @Column(name = "position")
+    private int position;
 }

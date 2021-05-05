@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
-@Table("role")
+@Table(name = "role")
 @Getter
 @Setter
 public class Role extends BaseEntity{
@@ -17,13 +17,13 @@ public class Role extends BaseEntity{
     @GeneratedValue(generator = "role_seq")
     private Long id;
 
-    @Column("name")
+    @Column(name = "name")
     private String name;
 
     @ManyToMany(mappedBy = "roles")
     private Collection<User> users;
 
-    @ManyToMany
+    @ManyToMany()
     @JoinTable(
             name = "roles_privileges",
             joinColumns = @JoinColumn(
