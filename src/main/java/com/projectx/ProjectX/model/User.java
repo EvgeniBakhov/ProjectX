@@ -60,7 +60,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "email_verified")
     private boolean emailVerified;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(

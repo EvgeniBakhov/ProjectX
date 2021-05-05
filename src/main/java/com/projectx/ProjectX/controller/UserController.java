@@ -7,6 +7,7 @@ import com.projectx.ProjectX.model.resource.UserUpdateResource;
 import com.projectx.ProjectX.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +44,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasAuthority('DELETE_USER')")
     @DeleteMapping(value = "/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         return ResponseEntity.ok().build();
@@ -52,6 +54,12 @@ public class UserController {
     public ResponseEntity<UserResponseResource> getUserById(@PathVariable Long userId) {
         UserResponseResource response = userService.findUserById(userId);
         return ResponseEntity.ok().body(response);
+    }
+
+    @PreAuthorize("hasAuthority('EDIT_USER')")
+    @PutMapping(value = "/{userId}")
+    public ResponseEntity<Void> editUserById(@PathVariable Long userId, @RequestBody UserUpdateResource resource) {
+        return ResponseEntity.ok().build();
     }
 
 }

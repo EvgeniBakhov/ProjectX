@@ -19,7 +19,4 @@ public class Privilege extends BaseEntity{
 
     @Column(name = "name")
     private String name;
-
-    @ManyToMany(mappedBy = "privileges")
-    private Collection<Role> roles;
 }

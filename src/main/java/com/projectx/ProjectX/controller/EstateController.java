@@ -2,6 +2,7 @@ package com.projectx.ProjectX.controller;
 
 import com.projectx.ProjectX.model.Estate;
 import com.projectx.ProjectX.model.User;
+import com.projectx.ProjectX.model.resource.EstateCreateRequest;
 import com.projectx.ProjectX.model.resource.EstateUpdateResource;
 import com.projectx.ProjectX.service.EstateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,9 @@ public class EstateController {
 
     @PreAuthorize("hasAuthority('PUBLISH_ESTATE')")
     @PostMapping()
-    public ResponseEntity<Void> publishEstate(@RequestBody Estate estate) {
-        if(estateService.publishEstate(estate)) {
+    public ResponseEntity<Void> publishEstate(@RequestBody EstateCreateRequest request,
+                                              @AuthenticationPrincipal User user) {
+        if(estateService.publishEstate(request, user)) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().build();
