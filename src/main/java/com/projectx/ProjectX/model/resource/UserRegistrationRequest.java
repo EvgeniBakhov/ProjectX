@@ -3,10 +3,14 @@ package com.projectx.ProjectX.model.resource;
 import com.projectx.ProjectX.model.Address;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.usertype.UserType;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 @Getter
 @Setter
-public class UserRegistrationResource {
+public class UserRegistrationRequest {
 
     private String username;
     private String firstName;
@@ -16,4 +20,6 @@ public class UserRegistrationResource {
     private String password;
     private String phone;
     private Address address;
+    private String type;
+
 }

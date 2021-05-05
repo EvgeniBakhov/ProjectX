@@ -3,11 +3,11 @@ package com.projectx.ProjectX.service;
 import com.projectx.ProjectX.assembler.UserAssembler;
 import com.projectx.ProjectX.assembler.UserResponseAssembler;
 import com.projectx.ProjectX.model.User;
+import com.projectx.ProjectX.model.resource.UserRegistrationRequest;
 import com.projectx.ProjectX.model.resource.UserResponseResource;
 import com.projectx.ProjectX.model.resource.UserUpdateResource;
 import com.projectx.ProjectX.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -33,14 +33,13 @@ public class UserService {
     @Autowired
     UserResponseAssembler userResponseAssembler;
 
-    public User register(User user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()
-                || userRepository.findByEmail(user.getEmail()).isPresent()
-                || !validateEmail(user.getEmail())) {
+    public User register(UserRegistrationRequest request) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent()
+                || userRepository.findByEmail(request.getEmail()).isPresent()
+                || !validateEmail(request.getEmail())) {
             return null;
         }
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        user.setPassword(encoder.encode(user.getPassword()));
+        User user = userAssembler.fromRegistrationRequest(request);
         return userRepository.save(user);
     }
 

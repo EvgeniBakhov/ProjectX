@@ -1,5 +1,14 @@
 package com.projectx.ProjectX.enums;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public enum UserType {
-    NORMAL, OWNER, ORGANIZER, ADMIN
+    @JsonProperty("normal")
+    NORMAL,
+    @JsonProperty("owner")
+    OWNER,
+    @JsonProperty("organizer")
+    ORGANIZER,
+    @JsonProperty("admin")
+    ADMIN
 }

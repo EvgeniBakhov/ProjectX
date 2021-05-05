@@ -1,6 +1,7 @@
 package com.projectx.ProjectX.controller;
 
 import com.projectx.ProjectX.model.User;
+import com.projectx.ProjectX.model.resource.UserRegistrationRequest;
 import com.projectx.ProjectX.model.resource.UserResponseResource;
 import com.projectx.ProjectX.model.resource.UserUpdateResource;
 import com.projectx.ProjectX.service.UserService;
@@ -17,9 +18,9 @@ public class UserController {
     private UserService userService;
 
     @PostMapping(value = "/signup")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
+    public ResponseEntity<User> registerUser(@RequestBody UserRegistrationRequest request) {
         try {
-            User response = userService.register(user);
+            User response = userService.register(request);
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
