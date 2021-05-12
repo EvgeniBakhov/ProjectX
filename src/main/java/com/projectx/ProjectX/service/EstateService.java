@@ -52,4 +52,8 @@ public class EstateService {
     public Optional<Estate> updateEstateDetails(Long id, EstateUpdateResource resource, User principal) {
         return null;
     }
+
+    public Optional<List<Estate>> findEstatesByCity(String city) {
+        return estateRepository.findAllByCity(city);
+    }
 }

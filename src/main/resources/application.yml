@@ -12,5 +12,15 @@ spring:
   security:
     filter:
       order: 10
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: project.x.mailservice65@gmail.com
+    password: ProX0605Smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
 jwt:
   secret: projectx

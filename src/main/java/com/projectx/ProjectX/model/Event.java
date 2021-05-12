@@ -48,7 +48,7 @@ public class Event extends BaseEntity {
 
     @ManyToOne()
     @JoinColumn(name = "organizer_id", referencedColumnName = "id")
-    private User user;
+    private User organizer;
 
     @Column(name = "type")
     @Enumerated(EnumType.STRING)

@@ -2,6 +2,7 @@ package com.projectx.ProjectX.controller;
 
 import com.projectx.ProjectX.model.Event;
 import com.projectx.ProjectX.model.User;
+import com.projectx.ProjectX.model.resource.EventCreateRequest;
 import com.projectx.ProjectX.model.resource.EventUpdateResource;
 import com.projectx.ProjectX.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,8 @@ public class EventController {
 
     @PreAuthorize("hasAuthority('PUBLISH_EVENT')")
     @PostMapping()
-    public ResponseEntity<Event> createEvent(@RequestBody Event event) {
+    public ResponseEntity<Event> createEvent(@RequestBody EventCreateRequest request, @AuthenticationPrincipal User user) {
+        eventService.createEvent(request, user);
         return ResponseEntity.ok().build();
     }
 
@@ -32,6 +34,11 @@ public class EventController {
 
     @DeleteMapping(value = "/{eventId}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long eventId) {
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/{eventId}")
+    public ResponseEntity<Void> addPhotos() {
         return ResponseEntity.ok().build();
     }
 }

@@ -2,13 +2,16 @@ package com.projectx.ProjectX.service;
 
 import com.projectx.ProjectX.assembler.UserAssembler;
 import com.projectx.ProjectX.assembler.UserResponseAssembler;
+import com.projectx.ProjectX.model.PasswordResetToken;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.UserRegistrationRequest;
 import com.projectx.ProjectX.model.resource.UserResponseResource;
 import com.projectx.ProjectX.model.resource.UserUpdateResource;
+import com.projectx.ProjectX.repository.PasswordTokenRepository;
 import com.projectx.ProjectX.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -16,6 +19,8 @@ import java.util.regex.Pattern;
 
 @Service
 public class UserService {
+
+    private final String PICTURE_PATH = "src/main/resources/static/user-pictures/";
 
     private static final String EMAIL_REGEX = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:" +
             "\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|" +
@@ -26,6 +31,9 @@ public class UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    PasswordTokenRepository passwordTokenRepository;
 
     @Autowired
     UserAssembler userAssembler;
@@ -54,6 +62,22 @@ public class UserService {
     public UserResponseResource findUserById(Long userId) {
         Optional<User> user = userRepository.findById(userId);
         return user.isPresent() ? null : userResponseAssembler.fromUser(user.get());
+    }
+
+    public User findUserByEmail(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        return user.get();
+    }
+
+    public boolean uploadPicture(MultipartFile picture, User user) {
+        return false;
+    }
+
+    public void createPasswordResetTokenForUser(User user, String token) {
+        PasswordResetToken myToken = new PasswordResetToken();
+        myToken.setToken(token);
+        myToken.setUser(user);
+        passwordTokenRepository.save(myToken);
     }
 
     private boolean validateEmail(String email) {

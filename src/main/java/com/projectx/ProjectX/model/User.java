@@ -23,23 +23,22 @@ public class User extends BaseEntity implements UserDetails {
     @GeneratedValue(generator = "user_seq")
     private Long id;
 
-    @Column(name = "username", unique = true)
-    @NotNull
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "age")
+    @Column(name = "age", nullable = false)
     private int age;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "phone", unique = true)
