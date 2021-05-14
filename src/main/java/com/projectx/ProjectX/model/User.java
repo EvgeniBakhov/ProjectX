@@ -48,9 +48,8 @@ public class User extends BaseEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserType type;
 
-    @OneToOne()
-    @JoinColumn(name = "picture", referencedColumnName = "id")
-    private Picture picture;
+    @JoinColumn(name = "picture")
+    private String picture;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")

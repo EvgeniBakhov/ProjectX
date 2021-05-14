@@ -10,7 +10,7 @@ import lombok.Setter;
 public class UserUpdateResource {
 
     private String phone;
-    private Picture picture;
+    private String picture;
     private Address address;
 
 }

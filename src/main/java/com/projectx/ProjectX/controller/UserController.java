@@ -58,12 +58,18 @@ public class UserController {
     @PreAuthorize("hasAuthority('DELETE_USER')")
     @DeleteMapping(value = "/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+        if (!userService.deleteUser(userId)) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/{userId}")
     public ResponseEntity<UserResponseResource> getUserById(@PathVariable Long userId) {
         UserResponseResource response = userService.findUserById(userId);
+        if (response == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok().body(response);
     }
 
@@ -76,8 +82,11 @@ public class UserController {
 
     @PostMapping(value = "/picture")
     public ResponseEntity<Void> addPicture(@AuthenticationPrincipal User user,
-                                           @RequestParam("picture")MultipartFile picture) {
-        return ResponseEntity.ok().build();
+                                           @RequestParam("picture") MultipartFile picture) {
+        if (userService.uploadPicture(picture, user)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
     }
 
 //    @PostMapping("/resetPassword")

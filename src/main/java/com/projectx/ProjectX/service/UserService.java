@@ -2,6 +2,7 @@ package com.projectx.ProjectX.service;
 
 import com.projectx.ProjectX.assembler.UserAssembler;
 import com.projectx.ProjectX.assembler.UserResponseAssembler;
+import com.projectx.ProjectX.exceptions.UserNotFoundException;
 import com.projectx.ProjectX.model.PasswordResetToken;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.UserRegistrationRequest;
@@ -13,6 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,7 +27,7 @@ import java.util.regex.Pattern;
 @Service
 public class UserService {
 
-    private final String PICTURE_PATH = "src/main/resources/static/user-pictures/";
+    private final String PICTURE_PATH = "/static/user-pictures/";
 
     private static final String EMAIL_REGEX = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:" +
             "\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|" +
@@ -51,11 +58,13 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void updateUserProfile(User principal, UserUpdateResource resource) {
+    public void updateUserProfile(User principal, UserUpdateResource resource) throws UserNotFoundException {
         Optional<User> existingUser = userRepository.findById(principal.getId());
         if (existingUser.isPresent()) {
             User updatedUser = userAssembler.fromUpdateResource(principal, resource);
             userRepository.save(updatedUser);
+        } else {
+            throw new UserNotFoundException("User with this id is not found");
         }
     }
 
@@ -70,7 +79,34 @@ public class UserService {
     }
 
     public boolean uploadPicture(MultipartFile picture, User user) {
-        return false;
+        String uploadDir = PICTURE_PATH + user.getId() + "/";
+
+        Path uploadPath = Paths.get(uploadDir);
+        try (InputStream inputStream = picture.getInputStream()) {
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+            Date date = new Date();
+            Path filePath = uploadPath.resolve(date.getTime() + picture.getOriginalFilename());
+            Path file = Files.createFile(filePath);
+            picture.transferTo(file);
+            user.setPicture(file.toAbsolutePath().toString());
+            userRepository.save(user);
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean deleteUser(Long userId) {
+        Optional<User> existingUser = userRepository.findById(userId);
+        if(existingUser.isPresent()) {
+            existingUser.get().setDeleted(true);
+            userRepository.save(existingUser.get());
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void createPasswordResetTokenForUser(User user, String token) {

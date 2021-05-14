@@ -18,7 +18,7 @@ public class UserResponseResource {
     private String email;
     private String phone;
     private UserType type;
-    private Picture picture;
+    private String picture;
     private Address address;
 
 }
