@@ -30,13 +30,7 @@ public class EstateService {
     }
 
     public Optional<Estate> findEstateById(Long estateId) {
-        Optional<Estate> estate;
-        try {
-            estate = estateRepository.findById(estateId);
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-        return estate;
+        return estateRepository.findById(estateId);
     }
 
     public Optional<List<Estate>> findEstatesByOwnerId(Long ownerId) {

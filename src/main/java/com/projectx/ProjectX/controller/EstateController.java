@@ -53,7 +53,7 @@ public class EstateController {
     @GetMapping("/?city=")
     public ResponseEntity<List<Estate>> getEstatesByCity(@PathParam("city") String city) {
         Optional<List<Estate>> estates = estateService.findEstatesByCity(city);
-        return ResponseEntity.ok().body(estates.get());
+        return ResponseEntity.of(estates);
     }
 
     @DeleteMapping("/{estateId}")

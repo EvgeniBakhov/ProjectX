@@ -39,6 +39,8 @@ Roles and privileges system:
 Each user has only one role: NORMAL, OWNER, ORGANIZER or ADMIN. Each role has a set of privileges. Privilege - string,
 that represents activity allowed by this privilege.
 
+## Version 0.2.0
+Added model, service and controller for reservation.
 
-## Version 1.0
+## Version 0.1.0
 Implemented basic functionalities of the app such as: user registration, user login, estate and event publishing.

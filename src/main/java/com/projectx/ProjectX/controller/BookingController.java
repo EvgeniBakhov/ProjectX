@@ -51,7 +51,7 @@ public class BookingController {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<List<BookingResponseResource>> viewBookingsForEstate() {
+    public ResponseEntity<List<BookingResponseResource>> findBookingsForEstate() {
         return ResponseEntity.ok().build();
     }
 
