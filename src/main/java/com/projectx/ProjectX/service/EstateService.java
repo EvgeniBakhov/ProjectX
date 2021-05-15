@@ -70,4 +70,18 @@ public class EstateService {
     public Optional<List<Estate>> findEstatesByCity(String city) {
         return estateRepository.findAllByCity(city);
     }
+
+    public void deleteEstate(Long estateId, User user) throws UpdateNotAllowedException, EstateNotFoundException {
+        Optional<Estate> existingEstate = estateRepository.findById(estateId);
+        if (existingEstate.isPresent()) {
+            if (existingEstate.get().getOwner().getId().equals(user.getId())) {
+                existingEstate.get().setDeleted(true);
+                estateRepository.save(existingEstate.get());
+            } else {
+                throw new UpdateNotAllowedException("User is not the owner of this estate.");
+            }
+        } else {
+            throw new EstateNotFoundException("Estate with this id does not exist.");
+        }
+    }
 }

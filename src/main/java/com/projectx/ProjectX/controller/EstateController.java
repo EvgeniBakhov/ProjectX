@@ -69,7 +69,14 @@ public class EstateController {
     }
 
     @DeleteMapping("/{estateId}")
-    public ResponseEntity<Void> deleteEstate(@PathVariable Long estateId, @AuthenticationPrincipal User user) {
+    public ResponseEntity deleteEstate(@PathVariable Long estateId, @AuthenticationPrincipal User user) {
+        try {
+            estateService.deleteEstate(estateId, user);
+        } catch (UpdateNotAllowedException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (EstateNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
         return ResponseEntity.ok().build();
     }
 
