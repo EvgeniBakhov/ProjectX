@@ -76,6 +76,11 @@ public class UserController {
     @PreAuthorize("hasAuthority('EDIT_USER')")
     @PutMapping(value = "/{userId}")
     public ResponseEntity<Void> editUserById(@PathVariable Long userId, @RequestBody UserUpdateResource resource) {
+        try {
+            userService.editUser(userId, resource);
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok().build();
     }
 

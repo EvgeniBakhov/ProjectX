@@ -121,4 +121,14 @@ public class UserService {
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
+
+    public void editUser(Long userId, UserUpdateResource resource) throws UserNotFoundException {
+        Optional<User> existingUser = userRepository.findById(userId);
+        if (existingUser.isPresent()) {
+            User updatedUser = userAssembler.fromUpdateResource(existingUser.get(), resource);
+            userRepository.save(updatedUser);
+        } else {
+            throw new UserNotFoundException("User not found!");
+        }
+    }
 }

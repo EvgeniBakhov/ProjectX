@@ -1,11 +1,15 @@
 package com.projectx.ProjectX.controller;
 
+import com.projectx.ProjectX.exceptions.EstateNotFoundException;
+import com.projectx.ProjectX.exceptions.UpdateNotAllowedException;
 import com.projectx.ProjectX.model.Estate;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.EstateCreateRequest;
+import com.projectx.ProjectX.model.resource.EstateResponseResource;
 import com.projectx.ProjectX.model.resource.EstateUpdateResource;
 import com.projectx.ProjectX.service.EstateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,10 +38,18 @@ public class EstateController {
     }
 
     @PutMapping(value = "/{estateId}")
-    public ResponseEntity<Estate> updateEstateDetails(@RequestBody EstateUpdateResource resource,
+    public ResponseEntity updateEstateDetails(@RequestBody EstateUpdateResource resource,
                                                       @PathVariable Long estateId,
                                                       @AuthenticationPrincipal User user) {
-        return ResponseEntity.of(estateService.updateEstateDetails(estateId, resource, user));
+        EstateResponseResource updatedEstate = null;
+        try {
+            updatedEstate = estateService.updateEstateDetails(estateId, resource, user);
+        } catch (EstateNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (UpdateNotAllowedException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        return ResponseEntity.ok(updatedEstate);
     }
 
     @GetMapping("/{estateId}")

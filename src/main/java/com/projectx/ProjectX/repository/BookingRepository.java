@@ -17,11 +17,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     Optional<List<Booking>> getAllByFromDateBetweenAndStatus(Date fromDate, Date toDate, BookingStatus status);
 
-//    @Query("select Booking from Booking b where " +
-//            "(b.toDate between :fromDate and :toDate) " +
-//            "and " +
-//            "(b.fromDate between :fromDate and :toDate) " +
-//            "and " +
-//            "b.status = :status")
-//    Optional<List<Booking>> getAllByFromAndToDateAreBetweenAndStatus(Date fromDate, Date toDate, BookingStatus status);
+    @Query("from Booking b where " +
+            "(b.toDate between :fromDate and :toDate) " +
+            "and " +
+            "(b.fromDate between :fromDate and :toDate) " +
+            "and " +
+            "b.status = :status")
+    Optional<List<Booking>> getAllByFromAndToDateAreBetweenAndStatus(Date fromDate, Date toDate, BookingStatus status);
 }
