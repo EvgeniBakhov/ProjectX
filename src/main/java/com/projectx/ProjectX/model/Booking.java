@@ -38,4 +38,7 @@ public class Booking extends BaseEntity {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
+
+    @Column(name = "comment")
+    private String comment;
 }

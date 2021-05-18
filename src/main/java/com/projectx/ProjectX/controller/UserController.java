@@ -25,9 +25,9 @@ public class UserController {
     private JavaMailSender mailSender;
 
     @PostMapping(value = "/signup")
-    public ResponseEntity<User> registerUser(@RequestBody UserRegistrationRequest request) {
+    public ResponseEntity registerUser(@RequestBody UserRegistrationRequest request) {
         try {
-            User response = userService.register(request);
+            UserResponseResource response = userService.register(request);
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

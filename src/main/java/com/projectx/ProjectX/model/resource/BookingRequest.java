@@ -12,4 +12,5 @@ public class BookingRequest {
     private Estate estate;
     private Date fromDate;
     private Date toDate;
+    private String comment;
 }

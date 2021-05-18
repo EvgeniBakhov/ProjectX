@@ -1,7 +1,8 @@
-package com.projectx.ProjectX.model.resource;
+package com.projectx.ProjectX.assembler;
 
 import com.projectx.ProjectX.assembler.UserResponseAssembler;
 import com.projectx.ProjectX.model.Event;
+import com.projectx.ProjectX.model.resource.EventResponseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

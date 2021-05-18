@@ -49,14 +49,15 @@ public class UserService {
     @Autowired
     UserResponseAssembler userResponseAssembler;
 
-    public User register(UserRegistrationRequest request) {
+    public UserResponseResource register(UserRegistrationRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()
                 || userRepository.findByEmail(request.getEmail()).isPresent()
                 || !validateEmail(request.getEmail())) {
             return null;
         }
         User user = userAssembler.fromRegistrationRequest(request);
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return userResponseAssembler.fromUser(user);
     }
 
     public void updateUserProfile(User principal, UserUpdateResource resource) throws EntityNotFoundException {

@@ -11,6 +11,7 @@ import lombok.Setter;
 @Setter
 public class UserResponseResource {
 
+    private Long id;
     private String username;
     private String firstName;
     private String lastName;

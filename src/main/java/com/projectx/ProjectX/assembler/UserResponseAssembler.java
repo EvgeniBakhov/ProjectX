@@ -9,6 +9,7 @@ public class UserResponseAssembler {
 
     public UserResponseResource fromUser(User user) {
         UserResponseResource resource = new UserResponseResource();
+        resource.setId(user.getId());
         resource.setUsername(user.getUsername());
         resource.setFirstName(user.getFirstName());
         resource.setLastName(user.getLastName());

@@ -2,10 +2,12 @@ package com.projectx.ProjectX.service;
 
 import com.projectx.ProjectX.assembler.BookingAssembler;
 import com.projectx.ProjectX.enums.BookingStatus;
+import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.InvalidBookingException;
 import com.projectx.ProjectX.model.Booking;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.BookingRequest;
+import com.projectx.ProjectX.model.resource.UpdateBookingRequest;
 import com.projectx.ProjectX.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,25 @@ public class BookingService {
             throw new InvalidBookingException("fromDate must be before the toDate");
         }
         return booking;
+    }
+
+    public void updateBooking(Long bookingId, User user, UpdateBookingRequest request)
+            throws InvalidBookingException, EntityNotFoundException {
+        Optional<Booking> existingBooking = bookingRepository.findById(bookingId);
+        if (existingBooking.isPresent()) {
+            Booking updatedBooking = bookingAssembler.fromUpdateRequest(request, existingBooking.get());
+            if (validateBooking(updatedBooking)) {
+                if (!checkForApprovedBookings(updatedBooking)) {
+                    bookingRepository.save(updatedBooking);
+                } else {
+                    throw new InvalidBookingException("Estate is booked for this date.");
+                }
+            } else {
+                throw new InvalidBookingException("fromDate nust be before the toDate");
+            }
+        } else {
+            throw new EntityNotFoundException("Booking with this id does not exist.");
+        }
     }
 
     private boolean checkForApprovedBookings(Booking booking) {

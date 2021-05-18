@@ -4,6 +4,7 @@ import com.projectx.ProjectX.enums.BookingStatus;
 import com.projectx.ProjectX.model.Booking;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.BookingRequest;
+import com.projectx.ProjectX.model.resource.UpdateBookingRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
@@ -19,6 +20,16 @@ public class BookingAssembler {
         booking.setUser(user);
         booking.setTotalPrice(calculateTotalPrice(booking));
         booking.setStatus(BookingStatus.CREATED);
+        booking.setComment(request.getComment());
+        return booking;
+    }
+
+    public Booking fromUpdateRequest(UpdateBookingRequest request, Booking booking) {
+        booking.setFromDate(request.getFromDate());
+        booking.setToDate(request.getToDate());
+        booking.setTotalPrice(calculateTotalPrice(booking));
+        booking.setStatus(BookingStatus.CREATED);
+        booking.setComment(request.getComment());
         return booking;
     }
 

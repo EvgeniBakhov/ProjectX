@@ -1,12 +1,15 @@
 package com.projectx.ProjectX.controller;
 
+import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.InvalidBookingException;
 import com.projectx.ProjectX.model.Booking;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.BookingRequest;
 import com.projectx.ProjectX.model.resource.BookingResponseResource;
+import com.projectx.ProjectX.model.resource.UpdateBookingRequest;
 import com.projectx.ProjectX.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,8 +38,16 @@ public class BookingController {
     }
 
     @PutMapping("/{bookingId}")
-    public ResponseEntity<Void> updateBooking(@PathVariable("bookingId") Long bookingId,
-                                              @AuthenticationPrincipal User user) {
+    public ResponseEntity updateBooking(@PathVariable("bookingId") Long bookingId,
+                                              @AuthenticationPrincipal User user,
+                                              @RequestBody UpdateBookingRequest request) {
+        try {
+            bookingService.updateBooking(bookingId, user, request);
+        } catch (InvalidBookingException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
         return ResponseEntity.ok().build();
     }
 

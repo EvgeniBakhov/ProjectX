@@ -6,7 +6,7 @@ import com.projectx.ProjectX.exceptions.UpdateNotAllowedException;
 import com.projectx.ProjectX.model.Event;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.EventCreateRequest;
-import com.projectx.ProjectX.model.resource.EventResponseAssembler;
+import com.projectx.ProjectX.assembler.EventResponseAssembler;
 import com.projectx.ProjectX.model.resource.EventResponseResource;
 import com.projectx.ProjectX.model.resource.EventUpdateRequest;
 import com.projectx.ProjectX.repository.EventRepository;
