@@ -55,6 +55,18 @@ public class BookingController {
         return ResponseEntity.ok().build();
     }
 
+    public ResponseEntity findRelevantBookingsForEstate() {
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity findApprovedBookingsForEstate() {
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity findBookingsBetweenTwoDatesForEstate() {
+        return ResponseEntity.ok().build();
+    }
+
     public ResponseEntity<BookingResponseResource> findBookingById() {
         return ResponseEntity.ok().build();
     }

@@ -10,6 +10,7 @@ import com.projectx.ProjectX.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,14 +42,18 @@ public class BookingService {
                 .getAllByFromDateBetweenAndStatus(booking.getFromDate(), booking.getToDate(), BookingStatus.APPROVED);
         Optional<List<Booking>> toDateCrossing = bookingRepository
                 .getAllByToDateBetweenAndStatus(booking.getFromDate(), booking.getToDate(), BookingStatus.APPROVED);
-//        Optional<List<Booking>> bothDatesCrossing = bookingRepository
-//                .getAllByFromAndToDateAreBetweenAndStatus(booking.getFromDate(), booking.getToDate(), BookingStatus.APPROVED);
+        Optional<List<Booking>> bookingBetweenFromAndToDate = bookingRepository
+                .getAllByFromAndToDateAreBetweenAndStatus(booking.getFromDate(), booking.getToDate(), BookingStatus.APPROVED);
+        Optional<List<Booking>> bookingIsInExistingBooking = bookingRepository
+                .getAllByFromDateIsLessAndToDateIsMore(booking.getFromDate(), booking.getToDate(), BookingStatus.APPROVED);
         return (fromDateCrossing.isPresent() && !fromDateCrossing.get().isEmpty())
-                || (toDateCrossing.isPresent() && !toDateCrossing.get().isEmpty());
-//                || (bothDatesCrossing.isPresent() && !bothDatesCrossing.get().isEmpty());
+                || (toDateCrossing.isPresent() && !toDateCrossing.get().isEmpty())
+                || (bookingBetweenFromAndToDate.isPresent() && !bookingBetweenFromAndToDate.get().isEmpty())
+                || (bookingIsInExistingBooking.isPresent() && !bookingIsInExistingBooking.get().isEmpty());
     }
 
     private boolean validateBooking(Booking booking) {
-        return booking.getToDate().compareTo(booking.getFromDate()) > 0;
+        return booking.getToDate().compareTo(booking.getFromDate()) > 0
+                && (booking.getFromDate().compareTo(new Date())) > 0;
     }
 }
