@@ -39,6 +39,9 @@ Roles and privileges system:
 Each user has only one role: NORMAL, OWNER, ORGANIZER or ADMIN. Each role has a set of privileges. Privilege - string,
 that represents activity allowed by this privilege.
 
+### Version 0.6.0
+Endpoint for getting event by an id.
+
 ### Version 0.5.0
 Endpoints for event update and deletion added. Add a picture to profile.
 

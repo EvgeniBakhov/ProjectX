@@ -5,6 +5,7 @@ import com.projectx.ProjectX.exceptions.UpdateNotAllowedException;
 import com.projectx.ProjectX.model.Event;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.EventCreateRequest;
+import com.projectx.ProjectX.model.resource.EventResponseResource;
 import com.projectx.ProjectX.model.resource.EventUpdateRequest;
 import com.projectx.ProjectX.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "event")
@@ -54,6 +57,16 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping(value = "/{eventId}")
+    public ResponseEntity findEventById(@PathVariable Long eventId) {
+        EventResponseResource event = null;
+        try {
+            event = eventService.findEventById(eventId);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+        return ResponseEntity.ok().body(event);
+    }
     @PostMapping(value = "/{eventId}")
     public ResponseEntity<Void> addPhotos() {
         return ResponseEntity.ok().build();

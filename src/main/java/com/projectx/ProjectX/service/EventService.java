@@ -6,6 +6,8 @@ import com.projectx.ProjectX.exceptions.UpdateNotAllowedException;
 import com.projectx.ProjectX.model.Event;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.EventCreateRequest;
+import com.projectx.ProjectX.model.resource.EventResponseAssembler;
+import com.projectx.ProjectX.model.resource.EventResponseResource;
 import com.projectx.ProjectX.model.resource.EventUpdateRequest;
 import com.projectx.ProjectX.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,9 @@ public class EventService {
 
     @Autowired
     EventRepository eventRepository;
+
+    @Autowired
+    EventResponseAssembler eventResponseAssembler;
 
     public boolean createEvent(EventCreateRequest request, User user) {
         EventAssembler eventAssembler = new EventAssembler();
@@ -54,6 +59,16 @@ public class EventService {
             } else {
                 throw new UpdateNotAllowedException("You are not the organizer of this event.");
             }
+        } else {
+            throw new EntityNotFoundException("Event with this id does not exist.");
+        }
+    }
+
+
+    public EventResponseResource findEventById(Long eventId) throws EntityNotFoundException {
+        Optional<Event> existingEvent = eventRepository.findById(eventId);
+        if (existingEvent.isPresent()) {
+            return eventResponseAssembler.fromEvent(existingEvent.get());
         } else {
             throw new EntityNotFoundException("Event with this id does not exist.");
         }
