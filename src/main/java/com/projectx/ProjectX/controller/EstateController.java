@@ -1,6 +1,6 @@
 package com.projectx.ProjectX.controller;
 
-import com.projectx.ProjectX.exceptions.EstateNotFoundException;
+import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.UpdateNotAllowedException;
 import com.projectx.ProjectX.model.Estate;
 import com.projectx.ProjectX.model.User;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.websocket.server.PathParam;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +45,7 @@ public class EstateController {
         EstateResponseResource updatedEstate = null;
         try {
             updatedEstate = estateService.updateEstateDetails(estateId, resource, user);
-        } catch (EstateNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (UpdateNotAllowedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -74,14 +75,24 @@ public class EstateController {
             estateService.deleteEstate(estateId, user);
         } catch (UpdateNotAllowedException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (EstateNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{estateId}")
-    public ResponseEntity<Void> addPictures(@RequestParam("picture") MultipartFile picture) {
+    public ResponseEntity uploadPictures(@RequestParam("pictures") MultipartFile[] pictures,
+                                               @PathVariable Long estateId, @AuthenticationPrincipal User user) {
+        try {
+            estateService.uploadPictures(estateId, pictures, user);
+        } catch (UpdateNotAllowedException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("Error peristing files");
+        }
         return ResponseEntity.ok().build();
     }
 }

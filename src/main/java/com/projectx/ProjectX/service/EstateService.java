@@ -2,22 +2,30 @@ package com.projectx.ProjectX.service;
 
 import com.projectx.ProjectX.assembler.EstateAssembler;
 import com.projectx.ProjectX.assembler.EstateResponseAssembler;
-import com.projectx.ProjectX.exceptions.EstateNotFoundException;
+import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.UpdateNotAllowedException;
 import com.projectx.ProjectX.model.Estate;
+import com.projectx.ProjectX.model.Picture;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.EstateCreateRequest;
 import com.projectx.ProjectX.model.resource.EstateResponseResource;
 import com.projectx.ProjectX.model.resource.EstateUpdateResource;
 import com.projectx.ProjectX.repository.EstateRepository;
+import com.projectx.ProjectX.util.FileSaver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class EstateService {
+
+    private final String PICTURE_PATH = "/static/estate-pictures/";
 
     @Autowired
     EstateRepository estateRepository;
@@ -51,8 +59,8 @@ public class EstateService {
     }
 
     public EstateResponseResource updateEstateDetails(Long id,
-                                                                EstateUpdateResource resource,
-                                                                User principal) throws EstateNotFoundException, UpdateNotAllowedException {
+                                                      EstateUpdateResource resource,
+                                                      User principal) throws EntityNotFoundException, UpdateNotAllowedException {
         EstateAssembler estateAssembler = new EstateAssembler();
         Optional<Estate> existingEstate = estateRepository.findById(id);
         if (existingEstate.isPresent()) {
@@ -63,7 +71,7 @@ public class EstateService {
                 throw new UpdateNotAllowedException("User is not the owner of this estate.");
             }
         } else {
-            throw new EstateNotFoundException("Estate with this id does not exist");
+            throw new EntityNotFoundException("Estate with this id does not exist");
         }
     }
 
@@ -71,17 +79,50 @@ public class EstateService {
         return estateRepository.findAllByCity(city);
     }
 
-    public void deleteEstate(Long estateId, User user) throws UpdateNotAllowedException, EstateNotFoundException {
+    public void deleteEstate(Long estateId, User user) throws UpdateNotAllowedException, EntityNotFoundException {
         Optional<Estate> existingEstate = estateRepository.findById(estateId);
         if (existingEstate.isPresent()) {
-            if (existingEstate.get().getOwner().getId().equals(user.getId())) {
-                existingEstate.get().setDeleted(true);
-                estateRepository.save(existingEstate.get());
-            } else {
-                throw new UpdateNotAllowedException("User is not the owner of this estate.");
-            }
+            checkIfOwner(existingEstate.get(), user);
+            existingEstate.get().setDeleted(true);
+            estateRepository.save(existingEstate.get());
         } else {
-            throw new EstateNotFoundException("Estate with this id does not exist.");
+            throw new EntityNotFoundException("Estate with this id does not exist.");
         }
+    }
+
+    public void uploadPictures(Long estateId, MultipartFile[] pictures, User user)
+            throws UpdateNotAllowedException, EntityNotFoundException, IOException {
+        Optional<Estate> existingEstate = estateRepository.findById(estateId);
+        if (existingEstate.isPresent()) {
+            checkIfOwner(existingEstate.get(), user);
+            String uploadDir = PICTURE_PATH + estateId + "/";
+            List<Picture> estatePictures = saveEstatePictures(uploadDir, pictures);
+            existingEstate.get().setPictures(estatePictures);
+            estateRepository.save(existingEstate.get());
+        } else {
+            throw new EntityNotFoundException("Estate with this id does not exist.");
+        }
+    }
+
+    private void checkIfOwner(Estate existingEstate, User user) throws UpdateNotAllowedException {
+        if (existingEstate.getOwner().getId().equals(user.getId())) {
+            return;
+        } else {
+            throw new UpdateNotAllowedException("User is not the owner of this estate.");
+        }
+    }
+
+    private List<Picture> saveEstatePictures(String uploadDir, MultipartFile[] pictures) throws IOException {
+        FileSaver fileSaver = new FileSaver();
+        List<Picture> pictureList = new ArrayList<>();
+        int pos = 0;
+        for(MultipartFile picture: pictures) {
+            Path file = fileSaver.savePicture(picture, uploadDir);
+            Picture newPicture = new Picture();
+            newPicture.setPosition(pos++);
+            newPicture.setUrl(file.toAbsolutePath().toString());
+            pictureList.add(newPicture);
+        }
+        return pictureList;
     }
 }

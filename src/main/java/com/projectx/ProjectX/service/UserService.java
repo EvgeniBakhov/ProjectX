@@ -2,7 +2,7 @@ package com.projectx.ProjectX.service;
 
 import com.projectx.ProjectX.assembler.UserAssembler;
 import com.projectx.ProjectX.assembler.UserResponseAssembler;
-import com.projectx.ProjectX.exceptions.UserNotFoundException;
+import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.model.PasswordResetToken;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.UserRegistrationRequest;
@@ -10,6 +10,7 @@ import com.projectx.ProjectX.model.resource.UserResponseResource;
 import com.projectx.ProjectX.model.resource.UserUpdateResource;
 import com.projectx.ProjectX.repository.PasswordTokenRepository;
 import com.projectx.ProjectX.repository.UserRepository;
+import com.projectx.ProjectX.util.FileSaver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,13 +59,13 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void updateUserProfile(User principal, UserUpdateResource resource) throws UserNotFoundException {
+    public void updateUserProfile(User principal, UserUpdateResource resource) throws EntityNotFoundException {
         Optional<User> existingUser = userRepository.findById(principal.getId());
         if (existingUser.isPresent()) {
             User updatedUser = userAssembler.fromUpdateResource(principal, resource);
             userRepository.save(updatedUser);
         } else {
-            throw new UserNotFoundException("User with this id is not found");
+            throw new EntityNotFoundException("User with this id is not found");
         }
     }
 
@@ -80,16 +81,9 @@ public class UserService {
 
     public boolean uploadPicture(MultipartFile picture, User user) {
         String uploadDir = PICTURE_PATH + user.getId() + "/";
-
-        Path uploadPath = Paths.get(uploadDir);
-        try (InputStream inputStream = picture.getInputStream()) {
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            Date date = new Date();
-            Path filePath = uploadPath.resolve(date.getTime() + picture.getOriginalFilename());
-            Path file = Files.createFile(filePath);
-            picture.transferTo(file);
+        try {
+            FileSaver fileSaver = new FileSaver();
+            Path file = fileSaver.savePicture(picture, uploadDir);
             user.setPicture(file.toAbsolutePath().toString());
             userRepository.save(user);
         } catch (IOException e) {
@@ -100,7 +94,7 @@ public class UserService {
 
     public boolean deleteUser(Long userId) {
         Optional<User> existingUser = userRepository.findById(userId);
-        if(existingUser.isPresent()) {
+        if (existingUser.isPresent()) {
             existingUser.get().setDeleted(true);
             userRepository.save(existingUser.get());
             return true;
@@ -122,13 +116,13 @@ public class UserService {
         return matcher.matches();
     }
 
-    public void editUser(Long userId, UserUpdateResource resource) throws UserNotFoundException {
+    public void editUser(Long userId, UserUpdateResource resource) throws EntityNotFoundException {
         Optional<User> existingUser = userRepository.findById(userId);
         if (existingUser.isPresent()) {
             User updatedUser = userAssembler.fromUpdateResource(existingUser.get(), resource);
             userRepository.save(updatedUser);
         } else {
-            throw new UserNotFoundException("User not found!");
+            throw new EntityNotFoundException("User not found!");
         }
     }
 }

@@ -4,6 +4,7 @@ import com.projectx.ProjectX.enums.EventStatus;
 import com.projectx.ProjectX.model.Event;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.EventCreateRequest;
+import com.projectx.ProjectX.model.resource.EventUpdateRequest;
 
 public class EventAssembler {
 
@@ -24,5 +25,20 @@ public class EventAssembler {
         event.setCreatedBy(user.getId().toString());
         event.setModifiedBy(user.getId().toString());
         return event;
+    }
+
+    public Event fromUpdateRequest(EventUpdateRequest request, Event existingEvent) {
+        existingEvent.setName(request.getName());
+        existingEvent.setDescription(request.getDescription());
+        existingEvent.setStartDate(request.getStartDate());
+        existingEvent.setEndDate(request.getEndDate());
+        existingEvent.setCapacity(request.getCapacity());
+        existingEvent.setAvailableSeats(request.getAvailableSeats());
+        existingEvent.setAgeRestrictions(request.getAgeRestrictions());
+        existingEvent.setAddress(request.getAddress());
+        existingEvent.setType(request.getType());
+        existingEvent.setPlaceType(request.getPlaceType());
+        existingEvent.setPlaceType(request.getPlaceType());
+        return existingEvent;
     }
 }

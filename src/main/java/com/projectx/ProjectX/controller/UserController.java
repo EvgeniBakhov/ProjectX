@@ -1,6 +1,6 @@
 package com.projectx.ProjectX.controller;
 
-import com.projectx.ProjectX.exceptions.UserNotFoundException;
+import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.UserRegistrationRequest;
 import com.projectx.ProjectX.model.resource.UserResponseResource;
@@ -8,16 +8,11 @@ import com.projectx.ProjectX.model.resource.UserUpdateResource;
 import com.projectx.ProjectX.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Locale;
-import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -78,7 +73,7 @@ public class UserController {
     public ResponseEntity<Void> editUserById(@PathVariable Long userId, @RequestBody UserUpdateResource resource) {
         try {
             userService.editUser(userId, resource);
-        } catch (UserNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok().build();
