@@ -4,6 +4,7 @@ import com.projectx.ProjectX.assembler.BookingAssembler;
 import com.projectx.ProjectX.enums.BookingStatus;
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.InvalidBookingException;
+import com.projectx.ProjectX.exceptions.UpdateNotAllowedException;
 import com.projectx.ProjectX.model.Booking;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.BookingRequest;
@@ -52,6 +53,21 @@ public class BookingService {
                 }
             } else {
                 throw new InvalidBookingException("fromDate nust be before the toDate");
+            }
+        } else {
+            throw new EntityNotFoundException("Booking with this id does not exist.");
+        }
+    }
+
+    public void cancelBooking(Long bookingId, User user) throws EntityNotFoundException, UpdateNotAllowedException {
+        Optional<Booking> existingBooking = bookingRepository.findById(bookingId);
+        if (existingBooking.isPresent()) {
+            if (existingBooking.get().getUser().getId().equals(user.getId())
+                    || existingBooking.get().getEstate().getOwner().getId().equals(user.getId())) {
+                existingBooking.get().setStatus(BookingStatus.CANCELLED);
+                bookingRepository.save(existingBooking.get());
+            } else {
+                throw new UpdateNotAllowedException("You have no rights to update this booking.");
             }
         } else {
             throw new EntityNotFoundException("Booking with this id does not exist.");
