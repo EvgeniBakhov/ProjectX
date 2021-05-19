@@ -28,7 +28,9 @@ public class EventService {
         EventAssembler eventAssembler = new EventAssembler();
         Event event = eventAssembler.fromCreateRequest(request, user);
         try {
-            eventRepository.save(event);
+            if (validateEvent(event)) {
+                eventRepository.save(event);
+            }
         } catch (Exception e) {
             return false;
         }
@@ -72,5 +74,9 @@ public class EventService {
         } else {
             throw new EntityNotFoundException("Event with this id does not exist.");
         }
+    }
+
+    private boolean validateEvent(Event event) {
+        return event.getCapacity() > 1000;
     }
 }
