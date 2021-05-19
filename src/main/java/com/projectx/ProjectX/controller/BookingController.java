@@ -26,17 +26,19 @@ public class BookingController {
     @Autowired
     BookingService bookingService;
 
-    @PostMapping()
+    @PostMapping(value = "/{estateId}")
     @PreAuthorize("hasAnyAuthority('BOOK_ESTATE')")
-    public ResponseEntity bookEstate(@AuthenticationPrincipal User user,
-                                              @RequestBody BookingRequest bookingRequest) {
-        Booking booking;
+    public ResponseEntity bookEstate(@PathVariable Long estateId,
+                                     @AuthenticationPrincipal User user,
+                                     @RequestBody BookingRequest bookingRequest) {
         try {
-            booking = bookingService.bookEstate(user, bookingRequest);
+            Booking booking = bookingService.bookEstate(estateId, user, bookingRequest);
+            return ResponseEntity.ok().body(booking);
         } catch (InvalidBookingException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-        return ResponseEntity.ok().body(booking);
     }
 
     @PutMapping("/{bookingId}")
@@ -69,7 +71,13 @@ public class BookingController {
     @GetMapping("/{bookingId}/approve")
     public ResponseEntity approveBooking(@PathVariable Long bookingId,
                                                @AuthenticationPrincipal User user) {
-        bookingService.approveBooking(bookingId, user);
+        try {
+            bookingService.approveBooking(bookingId, user);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (NotAllowedException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         return ResponseEntity.ok().build();
     }
 
@@ -111,7 +119,7 @@ public class BookingController {
 
     @GetMapping("/{bookingId}")
     public ResponseEntity findBookingById(@PathVariable Long bookingId,
-                                                                   @AuthenticationPrincipal User user) {
+                                          @AuthenticationPrincipal User user) {
         try {
             BookingResponseResource response = bookingService.findById(bookingId, user);
             return ResponseEntity.ok().body(response);

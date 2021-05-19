@@ -37,8 +37,12 @@ public class BookingService {
     @Autowired
     BookingResponseAssembler bookingResponseAssembler;
 
-    public Booking bookEstate(User user, BookingRequest bookingRequest) throws InvalidBookingException {
-        Booking booking = bookingAssembler.fromBookingRequest(bookingRequest, user);
+    public Booking bookEstate(Long estateId, User user, BookingRequest bookingRequest) throws InvalidBookingException, EntityNotFoundException {
+        Optional<Estate> existingEstate = estateRepository.findById(estateId);
+        if (!existingEstate.isPresent()) {
+            throw new EntityNotFoundException("Estate with this id does not exist.");
+        }
+        Booking booking = bookingAssembler.fromBookingRequest(bookingRequest, existingEstate.get(), user);
         if (validateBooking(booking)) {
             if (!checkForApprovedBookings(booking)) {
                 booking = bookingRepository.save(booking);
@@ -76,6 +80,8 @@ public class BookingService {
             if (existingBooking.get().getUser().getId().equals(user.getId())
                     || existingBooking.get().getEstate().getOwner().getId().equals(user.getId())) {
                 existingBooking.get().setStatus(BookingStatus.CANCELLED);
+                existingBooking.get().setModifiedDate(new Date());
+                existingBooking.get().setModifiedBy(user.getId().toString());
                 bookingRepository.save(existingBooking.get());
             } else {
                 throw new NotAllowedException("You have no rights to update this booking.");
@@ -105,8 +111,22 @@ public class BookingService {
                 && (booking.getFromDate().compareTo(new Date())) > 0;
     }
 
-    public void approveBooking(Long bookingId, User user) {
-
+    public void approveBooking(Long bookingId, User user) throws EntityNotFoundException, NotAllowedException {
+        Optional<Booking> existingBooking = bookingRepository.findById(bookingId);
+        if (existingBooking.isPresent()) {
+            if ((existingBooking.get().getUser().getId().equals(user.getId())
+                    || existingBooking.get().getEstate().getOwner().getId().equals(user.getId()))
+                    && BookingStatus.CREATED.equals(existingBooking.get().getStatus())) {
+                existingBooking.get().setStatus(BookingStatus.APPROVED);
+                existingBooking.get().setModifiedBy(user.getId().toString());
+                existingBooking.get().setModifiedDate(new Date());
+                bookingRepository.save(existingBooking.get());
+            } else {
+                throw new NotAllowedException("You have no rights to update this booking.");
+            }
+        } else {
+            throw new EntityNotFoundException("Booking with this id does not exist.");
+        }
     }
 
     public List<BookingResponseResource> findBookingsForEstate(Long estateId, User user)
