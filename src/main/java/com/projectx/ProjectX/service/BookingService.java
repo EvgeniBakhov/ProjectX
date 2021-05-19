@@ -129,8 +129,21 @@ public class BookingService {
         }
     }
 
-    public void findRelevantBookingsForEstate(Long estateId, User user) {
-
+    public List<BookingResponseResource> findRelevantBookingsForEstate(Long estateId, User user)
+            throws NotAllowedException, EntityNotFoundException {
+        Optional<Estate> estate = estateRepository.findById(estateId);
+        if (estate.isPresent()) {
+            if (estate.get().getOwner().getId().equals(user.getId())) {
+                Date today = new Date();
+                Optional<List<Booking>> bookings =
+                        bookingRepository.getAllByEstateAndFromDateIsGreaterThan(estate.get(), today);
+                return bookingResponseAssembler.fromBookingsList(bookings.get());
+            } else {
+                throw new NotAllowedException("You have to be an owner to view this info.");
+            }
+        } else {
+            throw new EntityNotFoundException("Estate with this id does not exist.");
+        }
     }
 
     public List<BookingResponseResource> findBookingsForEstateWithStatus(Long estateId, User user, BookingStatus status)

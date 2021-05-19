@@ -48,4 +48,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "OR " +
             "(b.toDate BETWEEN :fromDate AND :toDate)")
     Optional<List<Booking>> getAllByEstateAndFromDateIsBetweenOrToDateIsBetween(Estate estate, Date fromDate, Date toDate);
+
+    Optional<List<Booking>> getAllByEstateAndFromDateIsGreaterThan(Estate estate, Date date);
 }

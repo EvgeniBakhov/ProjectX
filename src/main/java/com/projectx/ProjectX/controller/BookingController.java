@@ -100,8 +100,14 @@ public class BookingController {
     @GetMapping("/estate/{estateId}/relevant")
     public ResponseEntity findRelevantBookingsForEstate(@PathVariable Long estateId,
                                                         @AuthenticationPrincipal User user) {
-        bookingService.findRelevantBookingsForEstate(estateId, user);
-        return ResponseEntity.ok().build();
+        try {
+            List<BookingResponseResource> bookings = bookingService.findRelevantBookingsForEstate(estateId, user);
+            return ResponseEntity.ok().body(bookings);
+        } catch (NotAllowedException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @GetMapping("/estate/{estateId}/approved")

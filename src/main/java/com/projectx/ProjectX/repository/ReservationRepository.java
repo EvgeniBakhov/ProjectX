@@ -17,4 +17,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     Optional<List<Reservation>> getAllByEvent(Event event);
 
     Optional<List<Reservation>> getAllByUser(User user);
+
+    Optional<Reservation> getByEventAndUser(Event event, User user);
 }
