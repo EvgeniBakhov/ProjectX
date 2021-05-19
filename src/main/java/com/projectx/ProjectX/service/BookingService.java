@@ -1,6 +1,7 @@
 package com.projectx.ProjectX.service;
 
 import com.projectx.ProjectX.assembler.BookingAssembler;
+import com.projectx.ProjectX.assembler.BookingResponseAssembler;
 import com.projectx.ProjectX.enums.BookingStatus;
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.InvalidBookingException;
@@ -8,6 +9,7 @@ import com.projectx.ProjectX.exceptions.UpdateNotAllowedException;
 import com.projectx.ProjectX.model.Booking;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.BookingRequest;
+import com.projectx.ProjectX.model.resource.BookingResponseResource;
 import com.projectx.ProjectX.model.resource.UpdateBookingRequest;
 import com.projectx.ProjectX.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class BookingService {
 
     @Autowired
     BookingAssembler bookingAssembler;
+
+    @Autowired
+    BookingResponseAssembler bookingResponseAssembler;
 
     public Booking bookEstate(User user, BookingRequest bookingRequest) throws InvalidBookingException {
         Booking booking = bookingAssembler.fromBookingRequest(bookingRequest, user);
@@ -114,8 +119,19 @@ public class BookingService {
 
     }
 
-    public void findById(Long bookingId, User user) {
-
+    public BookingResponseResource findById(Long bookingId, User user)
+            throws EntityNotFoundException, UpdateNotAllowedException {
+        Optional<Booking> existingBooking = bookingRepository.findById(bookingId);
+        if (existingBooking.isPresent()) {
+            if (existingBooking.get().getUser().getId().equals(user.getId())
+                    || existingBooking.get().getEstate().getOwner().getId().equals(user.getId())) {
+                return bookingResponseAssembler.fromBooking(existingBooking.get());
+            } else {
+                throw new UpdateNotAllowedException("You cannot view this booking.");
+            }
+        } else {
+            throw new EntityNotFoundException("Booking with this id does not exist.");
+        }
     }
 
     public void findForCurrentUser(User user) {

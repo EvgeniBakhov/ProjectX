@@ -104,10 +104,16 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public ResponseEntity<BookingResponseResource> findBookingById(@PathVariable Long bookingId,
+    public ResponseEntity findBookingById(@PathVariable Long bookingId,
                                                                    @AuthenticationPrincipal User user) {
-        bookingService.findById(bookingId, user);
-        return ResponseEntity.ok().build();
+        try {
+            BookingResponseResource response = bookingService.findById(bookingId, user);
+            return ResponseEntity.ok().body(response);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (UpdateNotAllowedException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping

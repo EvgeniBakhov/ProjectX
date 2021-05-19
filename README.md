@@ -39,6 +39,9 @@ Roles and privileges system:
 Each user has only one role: NORMAL, OWNER, ORGANIZER or ADMIN. Each role has a set of privileges. Privilege - string,
 that represents activity allowed by this privilege.
 
+### Version 0.9.0
+Added logic for getting booking by id.
+
 ### Version 0.8.0
 Added an endpoint for booking cancelling.
 
