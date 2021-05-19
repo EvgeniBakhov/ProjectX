@@ -28,7 +28,7 @@ public class BookingController {
 
     @PostMapping()
     @PreAuthorize("hasAnyAuthority('BOOK_ESTATE')")
-    public ResponseEntity<Object> bookEstate(@AuthenticationPrincipal User user,
+    public ResponseEntity bookEstate(@AuthenticationPrincipal User user,
                                               @RequestBody BookingRequest bookingRequest) {
         Booking booking;
         try {
@@ -67,45 +67,58 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}/approve")
-    public ResponseEntity<Void> approveBooking() {
+    public ResponseEntity approveBooking(@PathVariable Long bookingId,
+                                               @AuthenticationPrincipal User user) {
+        bookingService.approveBooking(bookingId, user);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/estate/{estateId}")
-    public ResponseEntity<List<BookingResponseResource>> findBookingsForEstate() {
+    public ResponseEntity findBookingsForEstate(@PathVariable Long estateId,
+                                                                               @AuthenticationPrincipal User user) {
+        bookingService.findBookingsForEstate(estateId, user);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/estate/{estateId}/relevant")
-    public ResponseEntity findRelevantBookingsForEstate() {
+    public ResponseEntity findRelevantBookingsForEstate(@PathVariable Long estateId,
+                                                        @AuthenticationPrincipal User user) {
+        bookingService.findRelevantBookingsForEstate(estateId, user);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/estate/{estateId}/approved")
-    public ResponseEntity findApprovedBookingsForEstate() {
+    public ResponseEntity findApprovedBookingsForEstate(@PathVariable Long estateId,
+                                                        @AuthenticationPrincipal User user) {
+        bookingService.findApprovedBookingsForEstate(estateId, user);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/estate/{estateId}")
+    @GetMapping("/estate/{estateId}/dates")
     public ResponseEntity findBookingsBetweenTwoDatesForEstate(@RequestParam(value = "fromDate")Date fromDate,
                                                                @RequestParam(value = "toDate") Date toDate,
                                                                @AuthenticationPrincipal User user,
                                                                @PathVariable Long estateId) {
+        bookingService.findBookingsBetweenDates(estateId, fromDate, toDate, user);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{bookingId}")
-    public ResponseEntity<BookingResponseResource> findBookingById() {
+    public ResponseEntity<BookingResponseResource> findBookingById(@PathVariable Long bookingId,
+                                                                   @AuthenticationPrincipal User user) {
+        bookingService.findById(bookingId, user);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping
-    public ResponseEntity<Void> findBookingsForCurrentUser() {
+    public ResponseEntity<List<BookingResponseResource>> findBookingsForCurrentUser(@AuthenticationPrincipal User user) {
+        bookingService.findForCurrentUser(user);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<Void> findBookingsForUser(@PathVariable Long userId, @AuthenticationPrincipal User user) {
+    public ResponseEntity<List<BookingResponseResource>> findBookingsForUser(@PathVariable Long userId, @AuthenticationPrincipal User user) {
+        bookingService.findForUser(userId, user);
         return ResponseEntity.ok().build();
     }
 }

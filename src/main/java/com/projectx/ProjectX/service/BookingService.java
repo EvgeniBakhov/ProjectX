@@ -93,4 +93,36 @@ public class BookingService {
         return booking.getToDate().compareTo(booking.getFromDate()) > 0
                 && (booking.getFromDate().compareTo(new Date())) > 0;
     }
+
+    public void approveBooking(Long bookingId, User user) {
+
+    }
+
+    public void findBookingsForEstate(Long estateId, User user) {
+
+    }
+
+    public void findRelevantBookingsForEstate(Long estateId, User user) {
+
+    }
+
+    public void findApprovedBookingsForEstate(Long estateId, User user) {
+
+    }
+
+    public void findBookingsBetweenDates(Long estateId, Date fromDate, Date toDate, User user) {
+
+    }
+
+    public void findById(Long bookingId, User user) {
+
+    }
+
+    public void findForCurrentUser(User user) {
+
+    }
+
+    public void findForUser(Long userId, User user) {
+
+    }
 }
