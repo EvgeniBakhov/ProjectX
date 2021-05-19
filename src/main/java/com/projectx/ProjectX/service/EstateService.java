@@ -3,7 +3,7 @@ package com.projectx.ProjectX.service;
 import com.projectx.ProjectX.assembler.EstateAssembler;
 import com.projectx.ProjectX.assembler.EstateResponseAssembler;
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
-import com.projectx.ProjectX.exceptions.UpdateNotAllowedException;
+import com.projectx.ProjectX.exceptions.NotAllowedException;
 import com.projectx.ProjectX.model.Estate;
 import com.projectx.ProjectX.model.Picture;
 import com.projectx.ProjectX.model.User;
@@ -60,7 +60,7 @@ public class EstateService {
 
     public EstateResponseResource updateEstateDetails(Long id,
                                                       EstateUpdateResource resource,
-                                                      User principal) throws EntityNotFoundException, UpdateNotAllowedException {
+                                                      User principal) throws EntityNotFoundException, NotAllowedException {
         EstateAssembler estateAssembler = new EstateAssembler();
         Optional<Estate> existingEstate = estateRepository.findById(id);
         if (existingEstate.isPresent()) {
@@ -68,7 +68,7 @@ public class EstateService {
                 Estate updatedEstate = estateAssembler.fromUpdateResource(resource, existingEstate.get());
                 return estateResponseAssembler.fromEstate(estateRepository.save(updatedEstate));
             } else {
-                throw new UpdateNotAllowedException("User is not the owner of this estate.");
+                throw new NotAllowedException("User is not the owner of this estate.");
             }
         } else {
             throw new EntityNotFoundException("Estate with this id does not exist");
@@ -79,7 +79,7 @@ public class EstateService {
         return estateRepository.findAllByCity(city);
     }
 
-    public void deleteEstate(Long estateId, User user) throws UpdateNotAllowedException, EntityNotFoundException {
+    public void deleteEstate(Long estateId, User user) throws NotAllowedException, EntityNotFoundException {
         Optional<Estate> existingEstate = estateRepository.findById(estateId);
         if (existingEstate.isPresent()) {
             checkIfOwner(existingEstate.get(), user);
@@ -91,7 +91,7 @@ public class EstateService {
     }
 
     public void uploadPictures(Long estateId, MultipartFile[] pictures, User user)
-            throws UpdateNotAllowedException, EntityNotFoundException, IOException {
+            throws NotAllowedException, EntityNotFoundException, IOException {
         Optional<Estate> existingEstate = estateRepository.findById(estateId);
         if (existingEstate.isPresent()) {
             checkIfOwner(existingEstate.get(), user);
@@ -104,11 +104,11 @@ public class EstateService {
         }
     }
 
-    private void checkIfOwner(Estate existingEstate, User user) throws UpdateNotAllowedException {
+    private void checkIfOwner(Estate existingEstate, User user) throws NotAllowedException {
         if (existingEstate.getOwner().getId().equals(user.getId())) {
             return;
         } else {
-            throw new UpdateNotAllowedException("User is not the owner of this estate.");
+            throw new NotAllowedException("User is not the owner of this estate.");
         }
     }
 

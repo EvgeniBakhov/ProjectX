@@ -1,7 +1,7 @@
 package com.projectx.ProjectX.controller;
 
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
-import com.projectx.ProjectX.exceptions.UpdateNotAllowedException;
+import com.projectx.ProjectX.exceptions.NotAllowedException;
 import com.projectx.ProjectX.model.Event;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.EventCreateRequest;
@@ -14,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "event")
@@ -39,7 +37,7 @@ public class EventController {
             eventService.updateEvent(eventId, request, user);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (UpdateNotAllowedException e) {
+        } catch (NotAllowedException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.ok().build();
@@ -49,7 +47,7 @@ public class EventController {
     public ResponseEntity deleteEvent(@PathVariable Long eventId, @AuthenticationPrincipal User user) {
         try {
             eventService.deleteEvent(eventId, user);
-        } catch (UpdateNotAllowedException e) {
+        } catch (NotAllowedException e) {
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (EntityNotFoundException e) {
             ResponseEntity.badRequest().body(e.getMessage());

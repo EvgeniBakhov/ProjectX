@@ -5,13 +5,15 @@ import com.projectx.ProjectX.assembler.BookingResponseAssembler;
 import com.projectx.ProjectX.enums.BookingStatus;
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.InvalidBookingException;
-import com.projectx.ProjectX.exceptions.UpdateNotAllowedException;
+import com.projectx.ProjectX.exceptions.NotAllowedException;
 import com.projectx.ProjectX.model.Booking;
+import com.projectx.ProjectX.model.Estate;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.BookingRequest;
 import com.projectx.ProjectX.model.resource.BookingResponseResource;
 import com.projectx.ProjectX.model.resource.UpdateBookingRequest;
 import com.projectx.ProjectX.repository.BookingRepository;
+import com.projectx.ProjectX.repository.EstateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,9 @@ public class BookingService {
 
     @Autowired
     BookingRepository bookingRepository;
+
+    @Autowired
+    EstateRepository estateRepository;
 
     @Autowired
     BookingAssembler bookingAssembler;
@@ -64,7 +69,7 @@ public class BookingService {
         }
     }
 
-    public void cancelBooking(Long bookingId, User user) throws EntityNotFoundException, UpdateNotAllowedException {
+    public void cancelBooking(Long bookingId, User user) throws EntityNotFoundException, NotAllowedException {
         Optional<Booking> existingBooking = bookingRepository.findById(bookingId);
         if (existingBooking.isPresent()) {
             if (existingBooking.get().getUser().getId().equals(user.getId())
@@ -72,7 +77,7 @@ public class BookingService {
                 existingBooking.get().setStatus(BookingStatus.CANCELLED);
                 bookingRepository.save(existingBooking.get());
             } else {
-                throw new UpdateNotAllowedException("You have no rights to update this booking.");
+                throw new NotAllowedException("You have no rights to update this booking.");
             }
         } else {
             throw new EntityNotFoundException("Booking with this id does not exist.");
@@ -103,8 +108,19 @@ public class BookingService {
 
     }
 
-    public void findBookingsForEstate(Long estateId, User user) {
-
+    public List<BookingResponseResource> findBookingsForEstate(Long estateId, User user)
+            throws NotAllowedException, EntityNotFoundException {
+        Optional<Estate> estate = estateRepository.findById(estateId);
+        if (estate.isPresent()) {
+            if (estate.get().getOwner().getId().equals(user.getId())) {
+                Optional<List<Booking>> estateBookings = bookingRepository.getAllByEstate(estateId);
+                return bookingResponseAssembler.fromBookingsList(estateBookings.get());
+            } else {
+                throw new NotAllowedException("You have to be an owner to view this info.");
+            }
+        } else {
+            throw new EntityNotFoundException("Estate with this id does not exist.");
+        }
     }
 
     public void findRelevantBookingsForEstate(Long estateId, User user) {
@@ -120,14 +136,14 @@ public class BookingService {
     }
 
     public BookingResponseResource findById(Long bookingId, User user)
-            throws EntityNotFoundException, UpdateNotAllowedException {
+            throws EntityNotFoundException, NotAllowedException {
         Optional<Booking> existingBooking = bookingRepository.findById(bookingId);
         if (existingBooking.isPresent()) {
             if (existingBooking.get().getUser().getId().equals(user.getId())
                     || existingBooking.get().getEstate().getOwner().getId().equals(user.getId())) {
                 return bookingResponseAssembler.fromBooking(existingBooking.get());
             } else {
-                throw new UpdateNotAllowedException("You cannot view this booking.");
+                throw new NotAllowedException("You cannot view this booking.");
             }
         } else {
             throw new EntityNotFoundException("Booking with this id does not exist.");

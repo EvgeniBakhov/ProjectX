@@ -2,7 +2,7 @@ package com.projectx.ProjectX.controller;
 
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.InvalidBookingException;
-import com.projectx.ProjectX.exceptions.UpdateNotAllowedException;
+import com.projectx.ProjectX.exceptions.NotAllowedException;
 import com.projectx.ProjectX.model.Booking;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.BookingRequest;
@@ -60,7 +60,7 @@ public class BookingController {
             bookingService.cancelBooking(bookingId, user);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (UpdateNotAllowedException e) {
+        } catch (NotAllowedException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.ok().build();
@@ -75,8 +75,14 @@ public class BookingController {
 
     @GetMapping("/estate/{estateId}")
     public ResponseEntity findBookingsForEstate(@PathVariable Long estateId,
-                                                                               @AuthenticationPrincipal User user) {
-        bookingService.findBookingsForEstate(estateId, user);
+                                                @AuthenticationPrincipal User user) {
+        try {
+            bookingService.findBookingsForEstate(estateId, user);
+        } catch (NotAllowedException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
         return ResponseEntity.ok().build();
     }
 
@@ -111,7 +117,7 @@ public class BookingController {
             return ResponseEntity.ok().body(response);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (UpdateNotAllowedException e) {
+        } catch (NotAllowedException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

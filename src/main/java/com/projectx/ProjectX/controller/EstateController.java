@@ -1,7 +1,7 @@
 package com.projectx.ProjectX.controller;
 
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
-import com.projectx.ProjectX.exceptions.UpdateNotAllowedException;
+import com.projectx.ProjectX.exceptions.NotAllowedException;
 import com.projectx.ProjectX.model.Estate;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.EstateCreateRequest;
@@ -47,7 +47,7 @@ public class EstateController {
             updatedEstate = estateService.updateEstateDetails(estateId, resource, user);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (UpdateNotAllowedException e) {
+        } catch (NotAllowedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
         return ResponseEntity.ok(updatedEstate);
@@ -73,7 +73,7 @@ public class EstateController {
     public ResponseEntity deleteEstate(@PathVariable Long estateId, @AuthenticationPrincipal User user) {
         try {
             estateService.deleteEstate(estateId, user);
-        } catch (UpdateNotAllowedException e) {
+        } catch (NotAllowedException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -86,7 +86,7 @@ public class EstateController {
                                                @PathVariable Long estateId, @AuthenticationPrincipal User user) {
         try {
             estateService.uploadPictures(estateId, pictures, user);
-        } catch (UpdateNotAllowedException e) {
+        } catch (NotAllowedException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
