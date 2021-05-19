@@ -96,26 +96,6 @@ public class BookingService {
         }
     }
 
-    private boolean checkForApprovedBookings(Booking booking) {
-        Optional<List<Booking>> fromDateCrossing = bookingRepository
-                .getAllByFromDateBetweenAndStatus(booking.getFromDate(), booking.getToDate(), BookingStatus.APPROVED);
-        Optional<List<Booking>> toDateCrossing = bookingRepository
-                .getAllByToDateBetweenAndStatus(booking.getFromDate(), booking.getToDate(), BookingStatus.APPROVED);
-        Optional<List<Booking>> bookingBetweenFromAndToDate = bookingRepository
-                .getAllByFromAndToDateAreBetweenAndStatus(booking.getFromDate(), booking.getToDate(), BookingStatus.APPROVED);
-        Optional<List<Booking>> bookingIsInExistingBooking = bookingRepository
-                .getAllByFromDateIsLessAndToDateIsMore(booking.getFromDate(), booking.getToDate(), BookingStatus.APPROVED);
-        return (fromDateCrossing.isPresent() && !fromDateCrossing.get().isEmpty())
-                || (toDateCrossing.isPresent() && !toDateCrossing.get().isEmpty())
-                || (bookingBetweenFromAndToDate.isPresent() && !bookingBetweenFromAndToDate.get().isEmpty())
-                || (bookingIsInExistingBooking.isPresent() && !bookingIsInExistingBooking.get().isEmpty());
-    }
-
-    private boolean validateBooking(Booking booking) {
-        return booking.getToDate().compareTo(booking.getFromDate()) > 0
-                && (booking.getFromDate().compareTo(new Date())) > 0;
-    }
-
     public void approveBooking(Long bookingId, User user) throws EntityNotFoundException, NotAllowedException {
         Optional<Booking> existingBooking = bookingRepository.findById(bookingId);
         if (existingBooking.isPresent()) {
@@ -153,12 +133,40 @@ public class BookingService {
 
     }
 
-    public Optional<List<BookingResponseResource>> findApprovedBookingsForEstate(Long estateId, User user) {
-        return null;
+    public List<BookingResponseResource> findBookingsForEstateWithStatus(Long estateId, User user, BookingStatus status)
+            throws NotAllowedException, EntityNotFoundException {
+        Optional<Estate> estate = estateRepository.findById(estateId);
+        if (estate.isPresent()) {
+            if (estate.get().getOwner().getId().equals(user.getId())) {
+                Optional<List<Booking>> estateBookings = bookingRepository
+                        .getAllByEstateAndStatus(estate.get(), status);
+                return bookingResponseAssembler.fromBookingsList(estateBookings.get());
+            } else {
+                throw new NotAllowedException("You have to be an owner to view this info.");
+            }
+        } else {
+            throw new EntityNotFoundException("Estate with this id does not exist.");
+        }
     }
 
-    public void findBookingsBetweenDates(Long estateId, Date fromDate, Date toDate, User user) {
-
+    public List<BookingResponseResource> findBookingsBetweenDates(Long estateId, Date fromDate, Date toDate, User user)
+            throws EntityNotFoundException, InvalidBookingException, NotAllowedException {
+        if(validateDates(fromDate, toDate)) {
+            Optional<Estate> estate = estateRepository.findById(estateId);
+            if (estate.isPresent()) {
+                if (estate.get().getOwner().getId().equals(user.getId())) {
+                    Optional<List<Booking>> bookings = bookingRepository
+                            .getAllByEstateAndFromDateIsBetweenOrToDateIsBetween(estate.get(), fromDate, toDate);
+                    return bookingResponseAssembler.fromBookingsList(bookings.get());
+                } else {
+                    throw new NotAllowedException("You must be owner of this estate to view this info.");
+                }
+            } else {
+                throw new EntityNotFoundException("Estate with this id does not exist.");
+            }
+        } else {
+            throw new InvalidBookingException("Invalid dates!");
+        }
     }
 
     public BookingResponseResource findById(Long bookingId, User user)
@@ -192,5 +200,28 @@ public class BookingService {
         } else {
             throw new EntityNotFoundException("User with this id does not exist.");
         }
+    }
+
+    private boolean checkForApprovedBookings(Booking booking) {
+        Optional<List<Booking>> fromDateCrossing = bookingRepository
+                .getAllByFromDateBetweenAndStatus(booking.getFromDate(), booking.getToDate(), BookingStatus.APPROVED);
+        Optional<List<Booking>> toDateCrossing = bookingRepository
+                .getAllByToDateBetweenAndStatus(booking.getFromDate(), booking.getToDate(), BookingStatus.APPROVED);
+        Optional<List<Booking>> bookingBetweenFromAndToDate = bookingRepository
+                .getAllByFromAndToDateAreBetweenAndStatus(booking.getFromDate(), booking.getToDate(), BookingStatus.APPROVED);
+        Optional<List<Booking>> bookingIsInExistingBooking = bookingRepository
+                .getAllByFromDateIsLessAndToDateIsMore(booking.getFromDate(), booking.getToDate(), BookingStatus.APPROVED);
+        return (fromDateCrossing.isPresent() && !fromDateCrossing.get().isEmpty())
+                || (toDateCrossing.isPresent() && !toDateCrossing.get().isEmpty())
+                || (bookingBetweenFromAndToDate.isPresent() && !bookingBetweenFromAndToDate.get().isEmpty())
+                || (bookingIsInExistingBooking.isPresent() && !bookingIsInExistingBooking.get().isEmpty());
+    }
+
+    private boolean validateBooking(Booking booking) {
+        return validateDates(booking.getFromDate(), booking.getToDate());
+    }
+
+    private boolean validateDates(Date fromDate, Date toDate) {
+        return toDate.compareTo(fromDate) > 0 && fromDate.compareTo(new Date()) >= 0;
     }
 }

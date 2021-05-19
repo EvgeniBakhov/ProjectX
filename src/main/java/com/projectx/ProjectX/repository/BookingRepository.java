@@ -38,4 +38,14 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<List<Booking>> getAllByEstate(Estate estate);
 
     Optional<List<Booking>> getAllByUser(User user);
+
+    Optional<List<Booking>> getAllByEstateAndStatus(Estate estate, BookingStatus status);
+
+    @Query("FROM Booking b WHERE " +
+            "b.estate = :estate " +
+            "AND " +
+            "(b.fromDate BETWEEN :fromDate AND :toDate) " +
+            "OR " +
+            "(b.toDate BETWEEN :fromDate AND :toDate)")
+    Optional<List<Booking>> getAllByEstateAndFromDateIsBetweenOrToDateIsBetween(Estate estate, Date fromDate, Date toDate);
 }

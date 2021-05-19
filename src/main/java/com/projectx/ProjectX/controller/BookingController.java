@@ -1,5 +1,6 @@
 package com.projectx.ProjectX.controller;
 
+import com.projectx.ProjectX.enums.BookingStatus;
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.InvalidBookingException;
 import com.projectx.ProjectX.exceptions.NotAllowedException;
@@ -16,6 +17,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -104,17 +107,37 @@ public class BookingController {
     @GetMapping("/estate/{estateId}/approved")
     public ResponseEntity findApprovedBookingsForEstate(@PathVariable Long estateId,
                                                         @AuthenticationPrincipal User user) {
-        bookingService.findApprovedBookingsForEstate(estateId, user);
-        return ResponseEntity.ok().build();
+        try {
+            List<BookingResponseResource> bookings =
+                    bookingService.findBookingsForEstateWithStatus(estateId, user, BookingStatus.APPROVED);
+            return ResponseEntity.ok().body(bookings);
+
+        } catch (NotAllowedException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @GetMapping("/estate/{estateId}/dates")
-    public ResponseEntity findBookingsBetweenTwoDatesForEstate(@RequestParam(value = "fromDate")Date fromDate,
-                                                               @RequestParam(value = "toDate") Date toDate,
+    public ResponseEntity findBookingsBetweenTwoDatesForEstate(@RequestParam(value = "fromDate") String from,
+                                                               @RequestParam(value = "toDate") String to,
                                                                @AuthenticationPrincipal User user,
                                                                @PathVariable Long estateId) {
-        bookingService.findBookingsBetweenDates(estateId, fromDate, toDate, user);
-        return ResponseEntity.ok().build();
+        try {
+            SimpleDateFormat sm = new SimpleDateFormat("yyyy-MM-dd");
+            Date fromDate = sm.parse(from);
+            Date toDate = sm.parse(to);
+            List<BookingResponseResource> bookingsBetweenDates =
+                    bookingService.findBookingsBetweenDates(estateId, fromDate, toDate, user);
+            return ResponseEntity.ok().body(bookingsBetweenDates);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (InvalidBookingException | NotAllowedException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (ParseException e) {
+            return ResponseEntity.badRequest().body("Wrong format.");
+        }
     }
 
     @GetMapping("/{bookingId}")
