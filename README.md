@@ -39,6 +39,9 @@ Roles and privileges system:
 Each user has only one role: NORMAL, OWNER, ORGANIZER or ADMIN. Each role has a set of privileges. Privilege - string,
 that represents activity allowed by this privilege.
 
+### Version 0.13.0
+Created the endpoint for getting booking by user id.
+
 ### Version 0.12.0
 Now booking can be approved by an owner of an estate.
 

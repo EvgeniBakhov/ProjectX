@@ -2,6 +2,7 @@ package com.projectx.ProjectX.service;
 
 import com.projectx.ProjectX.assembler.BookingAssembler;
 import com.projectx.ProjectX.assembler.BookingResponseAssembler;
+import com.projectx.ProjectX.assembler.UserResponseAssembler;
 import com.projectx.ProjectX.enums.BookingStatus;
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.InvalidBookingException;
@@ -14,6 +15,7 @@ import com.projectx.ProjectX.model.resource.BookingResponseResource;
 import com.projectx.ProjectX.model.resource.UpdateBookingRequest;
 import com.projectx.ProjectX.repository.BookingRepository;
 import com.projectx.ProjectX.repository.EstateRepository;
+import com.projectx.ProjectX.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,9 @@ public class BookingService {
 
     @Autowired
     EstateRepository estateRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     BookingAssembler bookingAssembler;
@@ -173,13 +178,19 @@ public class BookingService {
 
     public Optional<List<BookingResponseResource>> findForCurrentUser(User user) {
         Optional<List<Booking>> userBookings = bookingRepository.getAllByUser(user);
-        if(userBookings.isPresent()) {
+        if (userBookings.isPresent()) {
             return Optional.of(bookingResponseAssembler.fromBookingsList(userBookings.get()));
         }
         return Optional.empty();
     }
 
-    public void findForUser(Long userId, User user) {
-
+    public List<BookingResponseResource> findForUser(Long userId, User user) throws EntityNotFoundException {
+        Optional<User> existingUser = userRepository.findById(userId);
+        if (existingUser.isPresent()) {
+            Optional<List<Booking>> userBookings = bookingRepository.getAllByUser(existingUser.get());
+            return bookingResponseAssembler.fromBookingsList(userBookings.get());
+        } else {
+            throw new EntityNotFoundException("User with this id does not exist.");
+        }
     }
 }

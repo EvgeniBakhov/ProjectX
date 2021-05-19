@@ -136,8 +136,13 @@ public class BookingController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<BookingResponseResource>> findBookingsForUser(@PathVariable Long userId, @AuthenticationPrincipal User user) {
-        bookingService.findForUser(userId, user);
-        return ResponseEntity.ok().build();
+    public ResponseEntity findBookingsForUser(@PathVariable Long userId,
+                                              @AuthenticationPrincipal User user) {
+        try {
+            List<BookingResponseResource> userBookings = bookingService.findForUser(userId, user);
+            return ResponseEntity.ok().body(userBookings);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }
