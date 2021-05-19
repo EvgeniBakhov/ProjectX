@@ -17,6 +17,7 @@ import com.projectx.ProjectX.repository.EstateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -150,8 +151,12 @@ public class BookingService {
         }
     }
 
-    public void findForCurrentUser(User user) {
-
+    public Optional<List<BookingResponseResource>> findForCurrentUser(User user) {
+        Optional<List<Booking>> userBookings = bookingRepository.getAllByUser(user.getId());
+        if(userBookings.isPresent()) {
+            return Optional.of(bookingResponseAssembler.fromBookingsList(userBookings.get()));
+        }
+        return Optional.empty();
     }
 
     public void findForUser(Long userId, User user) {

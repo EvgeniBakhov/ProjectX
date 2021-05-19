@@ -1,4 +1,4 @@
-##PROJECT X
+### PROJECT X
 
 This project is a diploma work for the university. This app is created for searching for events and estates. 
 
@@ -38,6 +38,9 @@ Roles and privileges system:
 
 Each user has only one role: NORMAL, OWNER, ORGANIZER or ADMIN. Each role has a set of privileges. Privilege - string,
 that represents activity allowed by this privilege.
+
+### Version 0.11.0
+Added service method for getting bookings for current user.
 
 ### Version 0.10.0
 Added logic for getting bookings for a specific estate.

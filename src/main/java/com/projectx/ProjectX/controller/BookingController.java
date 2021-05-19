@@ -124,8 +124,7 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<List<BookingResponseResource>> findBookingsForCurrentUser(@AuthenticationPrincipal User user) {
-        bookingService.findForCurrentUser(user);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.of(bookingService.findForCurrentUser(user));
     }
 
     @GetMapping("/user/{userId}")

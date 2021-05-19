@@ -34,4 +34,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<List<Booking>> getAllByFromDateIsLessAndToDateIsMore(Date fromDate, Date toDate, BookingStatus status);
 
     Optional<List<Booking>> getAllByEstate(Long estateId);
+
+    Optional<List<Booking>> getAllByUser(Long userId);
 }
