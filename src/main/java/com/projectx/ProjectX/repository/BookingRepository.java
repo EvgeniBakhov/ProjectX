@@ -2,6 +2,8 @@ package com.projectx.ProjectX.repository;
 
 import com.projectx.ProjectX.enums.BookingStatus;
 import com.projectx.ProjectX.model.Booking;
+import com.projectx.ProjectX.model.Estate;
+import com.projectx.ProjectX.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -33,7 +35,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "b.status = :status")
     Optional<List<Booking>> getAllByFromDateIsLessAndToDateIsMore(Date fromDate, Date toDate, BookingStatus status);
 
-    Optional<List<Booking>> getAllByEstate(Long estateId);
+    Optional<List<Booking>> getAllByEstate(Estate estate);
 
-    Optional<List<Booking>> getAllByUser(Long userId);
+    Optional<List<Booking>> getAllByUser(User user);
 }

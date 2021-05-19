@@ -134,7 +134,7 @@ public class BookingService {
         Optional<Estate> estate = estateRepository.findById(estateId);
         if (estate.isPresent()) {
             if (estate.get().getOwner().getId().equals(user.getId())) {
-                Optional<List<Booking>> estateBookings = bookingRepository.getAllByEstate(estateId);
+                Optional<List<Booking>> estateBookings = bookingRepository.getAllByEstate(estate.get());
                 return bookingResponseAssembler.fromBookingsList(estateBookings.get());
             } else {
                 throw new NotAllowedException("You have to be an owner to view this info.");
@@ -148,8 +148,8 @@ public class BookingService {
 
     }
 
-    public void findApprovedBookingsForEstate(Long estateId, User user) {
-
+    public Optional<List<BookingResponseResource>> findApprovedBookingsForEstate(Long estateId, User user) {
+        return null;
     }
 
     public void findBookingsBetweenDates(Long estateId, Date fromDate, Date toDate, User user) {
@@ -172,7 +172,7 @@ public class BookingService {
     }
 
     public Optional<List<BookingResponseResource>> findForCurrentUser(User user) {
-        Optional<List<Booking>> userBookings = bookingRepository.getAllByUser(user.getId());
+        Optional<List<Booking>> userBookings = bookingRepository.getAllByUser(user);
         if(userBookings.isPresent()) {
             return Optional.of(bookingResponseAssembler.fromBookingsList(userBookings.get()));
         }
