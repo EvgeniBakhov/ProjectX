@@ -86,6 +86,7 @@ public class EstateController {
                                                @PathVariable Long estateId, @AuthenticationPrincipal User user) {
         try {
             estateService.uploadPictures(estateId, pictures, user);
+            return ResponseEntity.ok().build();
         } catch (NotAllowedException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (EntityNotFoundException e) {
@@ -93,6 +94,5 @@ public class EstateController {
         } catch (IOException e) {
             return ResponseEntity.badRequest().body("Error peristing files");
         }
-        return ResponseEntity.ok().build();
     }
 }

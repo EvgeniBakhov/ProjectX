@@ -11,14 +11,11 @@ import com.projectx.ProjectX.model.resource.EstateCreateRequest;
 import com.projectx.ProjectX.model.resource.EstateResponseResource;
 import com.projectx.ProjectX.model.resource.EstateUpdateResource;
 import com.projectx.ProjectX.repository.EstateRepository;
-import com.projectx.ProjectX.util.FileSaver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +26,9 @@ public class EstateService {
 
     @Autowired
     EstateRepository estateRepository;
+
+    @Autowired
+    PictureService pictureService;
 
     @Autowired
     EstateResponseAssembler estateResponseAssembler;
@@ -96,7 +96,7 @@ public class EstateService {
         if (existingEstate.isPresent()) {
             checkIfOwner(existingEstate.get(), user);
             String uploadDir = PICTURE_PATH + estateId + "/";
-            List<Picture> estatePictures = saveEstatePictures(uploadDir, pictures);
+            List<Picture> estatePictures = pictureService.persistPictures(uploadDir, pictures);
             existingEstate.get().setPictures(estatePictures);
             estateRepository.save(existingEstate.get());
         } else {
@@ -112,17 +112,5 @@ public class EstateService {
         }
     }
 
-    private List<Picture> saveEstatePictures(String uploadDir, MultipartFile[] pictures) throws IOException {
-        FileSaver fileSaver = new FileSaver();
-        List<Picture> pictureList = new ArrayList<>();
-        int pos = 0;
-        for(MultipartFile picture: pictures) {
-            Path file = fileSaver.savePicture(picture, uploadDir);
-            Picture newPicture = new Picture();
-            newPicture.setPosition(pos++);
-            newPicture.setUrl(file.toAbsolutePath().toString());
-            pictureList.add(newPicture);
-        }
-        return pictureList;
-    }
+
 }

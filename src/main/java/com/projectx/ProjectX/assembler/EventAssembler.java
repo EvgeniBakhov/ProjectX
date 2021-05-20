@@ -6,6 +6,8 @@ import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.EventCreateRequest;
 import com.projectx.ProjectX.model.resource.EventUpdateRequest;
 
+import java.util.Date;
+
 public class EventAssembler {
 
     public Event fromCreateRequest(EventCreateRequest request, User user) {
@@ -24,6 +26,7 @@ public class EventAssembler {
         event.setStatus(EventStatus.PLANNED);
         event.setCreatedBy(user.getId().toString());
         event.setModifiedBy(user.getId().toString());
+        event.setModifiedDate(new Date());
         return event;
     }
 

@@ -11,6 +11,7 @@ import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.ReservationResponseResource;
 import com.projectx.ProjectX.repository.EventRepository;
 import com.projectx.ProjectX.repository.ReservationRepository;
+import com.projectx.ProjectX.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,9 @@ public class ReservationService {
 
     @Autowired
     EventRepository eventRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     ReservationResponseAssembler reservationResponseAssembler;
@@ -139,6 +143,21 @@ public class ReservationService {
             }
         } else {
             throw new EntityNotFoundException("Event with this id does not exist.");
+        }
+    }
+
+    public List<ReservationResponseResource> findReservationsByUserId(Long userId, User user) throws NotAllowedException, EntityNotFoundException {
+        Optional<User> existingUser = userRepository.findById(userId);
+        if (existingUser.isPresent()) {
+            if(user.getAuthorities().stream()
+                    .filter(grantedAuthority -> grantedAuthority.equals("EDIT_USER")).toArray().length > 0) {
+                Optional<List<Reservation>> userReservations = reservationRepository.getAllByUser(existingUser.get());
+                return reservationResponseAssembler.fromReservationList(userReservations.get());
+            } else {
+                throw new NotAllowedException("You don't have rights to view this information.");
+            }
+        } else {
+            throw new EntityNotFoundException("User with this id does not exist.");
         }
     }
 }

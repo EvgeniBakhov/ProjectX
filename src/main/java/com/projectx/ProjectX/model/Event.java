@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "event")
@@ -60,5 +61,8 @@ public class Event extends BaseEntity {
 
     @Column(name = "status")
     private EventStatus status;
+
+    @OneToMany
+    private List<Picture> pictures;
 }
 

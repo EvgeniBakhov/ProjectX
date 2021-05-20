@@ -2,7 +2,6 @@ package com.projectx.ProjectX.controller;
 
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.NotAllowedException;
-import com.projectx.ProjectX.model.Reservation;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.ReservationResponseResource;
 import com.projectx.ProjectX.service.ReservationService;
@@ -88,6 +87,13 @@ public class ReservationController {
 
     @GetMapping(value = "user/{userId}")
     public ResponseEntity findReservationsByUserId(@PathVariable Long userId, @AuthenticationPrincipal User user) {
-        return null;
+        try {
+            List<ReservationResponseResource> reservations = reservationService.findReservationsByUserId(userId, user);
+            return ResponseEntity.ok().body(reservations);
+        } catch (NotAllowedException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

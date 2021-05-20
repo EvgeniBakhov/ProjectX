@@ -14,9 +14,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
-@RequestMapping(value = "event")
+@RequestMapping(value = "/event")
 public class EventController {
 
     @Autowired
@@ -65,8 +68,18 @@ public class EventController {
         }
         return ResponseEntity.ok().body(event);
     }
-    @PostMapping(value = "/{eventId}")
-    public ResponseEntity<Void> addPhotos() {
-        return ResponseEntity.ok().build();
+    @PostMapping("/{eventId}")
+    public ResponseEntity uploadPictures(@RequestParam("pictures") MultipartFile[] pictures,
+                                         @PathVariable Long eventId, @AuthenticationPrincipal User user) {
+        try {
+            eventService.uploadPictures(eventId, pictures, user);
+            return ResponseEntity.ok().build();
+        } catch (NotAllowedException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("Error peristing files");
+        }
     }
 }
