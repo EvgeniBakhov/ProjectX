@@ -25,6 +25,7 @@ public class EventAssembler {
         event.setOrganizer(user);
         event.setStatus(EventStatus.PLANNED);
         event.setCreatedBy(user.getId().toString());
+        event.setCreatedDate(new Date());
         event.setModifiedBy(user.getId().toString());
         event.setModifiedDate(new Date());
         return event;

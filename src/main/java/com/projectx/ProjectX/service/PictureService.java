@@ -27,7 +27,6 @@ public class PictureService {
             Picture newPicture = new Picture();
             newPicture.setPosition(pos++);
             newPicture.setUrl(file.toAbsolutePath().toString());
-            newPicture = pictureRepository.save(newPicture);
             System.out.println("Picture saved with path:" + newPicture.getUrl());
             pictureList.add(newPicture);
         }

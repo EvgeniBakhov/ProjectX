@@ -42,6 +42,6 @@ public class Estate extends BaseEntity {
     @Column(name = "description")
     private String description;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Picture> pictures;
 }

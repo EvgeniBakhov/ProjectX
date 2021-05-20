@@ -43,7 +43,8 @@ public class Event extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private EsrbRestrictions ageRestrictions;
 
-    @OneToOne()
+
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
@@ -62,7 +63,7 @@ public class Event extends BaseEntity {
     @Column(name = "status")
     private EventStatus status;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Picture> pictures;
 }
 
