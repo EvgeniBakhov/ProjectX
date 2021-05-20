@@ -1,8 +1,10 @@
 package com.projectx.ProjectX.service;
 
+import com.projectx.ProjectX.assembler.ReservationResponseAssembler;
 import com.projectx.ProjectX.enums.EventStatus;
 import com.projectx.ProjectX.enums.ReservationStatus;
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
+import com.projectx.ProjectX.exceptions.NotAllowedException;
 import com.projectx.ProjectX.model.Event;
 import com.projectx.ProjectX.model.Reservation;
 import com.projectx.ProjectX.model.User;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,6 +26,9 @@ public class ReservationService {
 
     @Autowired
     EventRepository eventRepository;
+
+    @Autowired
+    ReservationResponseAssembler reservationResponseAssembler;
 
     public ReservationResponseResource createReservation(Long eventId, User user) throws EntityNotFoundException {
         Optional<Event> event = eventRepository.findById(eventId);
@@ -69,5 +75,70 @@ public class ReservationService {
         reservation.setModifiedBy(user.getId().toString());
         reservation.setModifiedDate(new Date());
         return reservation;
+    }
+
+    public List<ReservationResponseResource> findReservationsForCurrentUser(User user) {
+        Optional<List<Reservation>> reservations = reservationRepository.getAllByUser(user);
+        return reservationResponseAssembler.fromReservationList(reservations.get());
+    }
+
+    public boolean approveReservation(Long reservationId, User user)
+            throws EntityNotFoundException, NotAllowedException {
+        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
+        if (reservation.isPresent()) {
+            if (reservation.get().getEvent().getOrganizer().getId().equals(user.getId())
+                    || !ReservationStatus.CANCELLED.equals(reservation.get().getStatus())) {
+                reservation.get().setStatus(ReservationStatus.APPROVED);
+                reservationRepository.save(reservation.get());
+                return true;
+            } else {
+                throw new NotAllowedException("You do not have rights to approve this reservation");
+            }
+        } else {
+            throw new EntityNotFoundException("Reservation with this id does not exist.");
+        }
+    }
+
+    public boolean cancelReservation(Long reservationId, User user) throws NotAllowedException, EntityNotFoundException {
+        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
+        if (reservation.isPresent()) {
+            if (reservation.get().getEvent().getOrganizer().getId().equals(user.getId())) {
+                reservation.get().setStatus(ReservationStatus.CANCELLED);
+                reservationRepository.save(reservation.get());
+                return true;
+            } else {
+                throw new NotAllowedException("You do not have rights to cancel the reservation.");
+            }
+        } else {
+            throw new EntityNotFoundException("Reservation with this id does not exist.");
+        }
+    }
+
+    public ReservationResponseResource findReservationById(Long reservationId, User user) throws NotAllowedException, EntityNotFoundException {
+        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
+        if (reservation.isPresent()) {
+            if(reservation.get().getUser().equals(user.getId())
+                    || reservation.get().getEvent().getOrganizer().getId().equals(user.getId())) {
+                return reservationResponseAssembler.fromReservation(reservation.get());
+            } else {
+                throw new NotAllowedException("You don't have rights to view this information.");
+            }
+        } else {
+            throw new EntityNotFoundException("Reservation with this id does not exist.");
+        }
+    }
+
+    public List<ReservationResponseResource> findReservationsForEvent(Long eventId, User user) throws NotAllowedException, EntityNotFoundException {
+        Optional<Event> event = eventRepository.findById(eventId);
+        if (event.isPresent()) {
+            if (event.get().getOrganizer().getId().equals(user.getId())) {
+                Optional<List<Reservation>> reservations = reservationRepository.getAllByEvent(event.get());
+                return reservationResponseAssembler.fromReservationList(reservations.get());
+            } else {
+                throw new NotAllowedException("You don't have rights to view this information.");
+            }
+        } else {
+            throw new EntityNotFoundException("Event with this id does not exist.");
+        }
     }
 }
