@@ -5,7 +5,6 @@ import com.projectx.ProjectX.assembler.EstateResponseAssembler;
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.NotAllowedException;
 import com.projectx.ProjectX.model.Estate;
-import com.projectx.ProjectX.model.Picture;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.EstateCreateRequest;
 import com.projectx.ProjectX.model.resource.EstateResponseResource;
@@ -18,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class EstateService {
@@ -96,7 +96,7 @@ public class EstateService {
         if (existingEstate.isPresent()) {
             checkIfOwner(existingEstate.get(), user);
             String uploadDir = PICTURE_PATH + estateId + "/";
-            List<Picture> estatePictures = pictureService.persistPictures(uploadDir, pictures);
+            Set<String> estatePictures = pictureService.persistPictures(uploadDir, pictures);
             existingEstate.get().setPictures(estatePictures);
             estateRepository.save(existingEstate.get());
         } else {

@@ -1,6 +1,6 @@
 package com.projectx.ProjectX.model.resource;
 
-import com.projectx.ProjectX.enums.EsrbRestrictions;
+import com.projectx.ProjectX.enums.PegiRestrictions;
 import com.projectx.ProjectX.enums.EventPlaceType;
 import com.projectx.ProjectX.enums.EventStatus;
 import com.projectx.ProjectX.enums.EventType;
@@ -20,7 +20,7 @@ public class EventUpdateRequest {
     private Date endDate;
     private int capacity;
     private int availableSeats;
-    private EsrbRestrictions ageRestrictions;
+    private PegiRestrictions ageRestrictions;
     private Address address;
     private EventType type;
     private EventPlaceType placeType;

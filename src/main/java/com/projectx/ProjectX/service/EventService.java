@@ -3,9 +3,7 @@ package com.projectx.ProjectX.service;
 import com.projectx.ProjectX.assembler.EventAssembler;
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.NotAllowedException;
-import com.projectx.ProjectX.model.Estate;
 import com.projectx.ProjectX.model.Event;
-import com.projectx.ProjectX.model.Picture;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.EventCreateRequest;
 import com.projectx.ProjectX.assembler.EventResponseAssembler;
@@ -19,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class EventService {
@@ -97,7 +96,7 @@ public class EventService {
         if (existingEvent.isPresent()) {
             checkIfOrganizer(existingEvent.get(), user);
             String uploadDir = PICTURE_PATH + eventId + "/";
-            List<Picture> estatePictures = pictureService.persistPictures(uploadDir, pictures);
+            Set<String> estatePictures = pictureService.persistPictures(uploadDir, pictures);
             existingEvent.get().setPictures(estatePictures);
             eventRepository.save(existingEvent.get());
         } else {

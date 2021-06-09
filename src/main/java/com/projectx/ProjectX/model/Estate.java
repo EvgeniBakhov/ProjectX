@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "estate")
@@ -42,6 +43,13 @@ public class Estate extends BaseEntity {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Picture> pictures;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "estate_picture",
+            joinColumns = {
+            @JoinColumn(
+                    name = "estate_id",
+                    referencedColumnName = "id")
+    })
+    private Set<String> pictures;
 }

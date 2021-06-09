@@ -27,6 +27,7 @@ public class EventResponseAssembler {
         eventResponseResource.setType(event.getType());
         eventResponseResource.setPlaceType(event.getPlaceType());
         eventResponseResource.setStatus(event.getStatus());
+        eventResponseResource.setPictures(event.getPictures());
         return eventResponseResource;
     }
 }

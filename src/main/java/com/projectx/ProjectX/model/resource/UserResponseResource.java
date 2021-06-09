@@ -1,7 +1,6 @@
 package com.projectx.ProjectX.model.resource;
 
 import com.projectx.ProjectX.model.Address;
-import com.projectx.ProjectX.model.Picture;
 import com.projectx.ProjectX.enums.UserType;
 
 import lombok.Getter;

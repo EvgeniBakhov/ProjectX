@@ -1,6 +1,6 @@
 package com.projectx.ProjectX.model;
 
-import com.projectx.ProjectX.enums.EsrbRestrictions;
+import com.projectx.ProjectX.enums.PegiRestrictions;
 import com.projectx.ProjectX.enums.EventPlaceType;
 import com.projectx.ProjectX.enums.EventStatus;
 import com.projectx.ProjectX.enums.EventType;
@@ -10,6 +10,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "event")
@@ -41,7 +42,7 @@ public class Event extends BaseEntity {
 
     @Column(name = "age_restrictions")
     @Enumerated(EnumType.STRING)
-    private EsrbRestrictions ageRestrictions;
+    private PegiRestrictions ageRestrictions;
 
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -63,7 +64,13 @@ public class Event extends BaseEntity {
     @Column(name = "status")
     private EventStatus status;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Picture> pictures;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "event_picture",
+            joinColumns = {
+            @JoinColumn(
+                    name = "event_id",
+                    referencedColumnName = "id")
+    })
+    private Set<String> pictures;
 }
 

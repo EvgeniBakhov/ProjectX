@@ -1,15 +1,13 @@
 package com.projectx.ProjectX.enums;
 
-import lombok.Getter;
+public enum PegiRestrictions {
 
-public enum EsrbRestrictions {
-
-    EVERYONE(0), EVERYONE_TEN_PLUS(10), TEEN(14), MATURE(16),
+    EVERYONE(3), EVERYONE_SEVEN_PLUS(7), TEEN(12), MATURE(16),
     ADULT(18);
 
     private final int minimalAge;
 
-    EsrbRestrictions(int minimalAge){
+    PegiRestrictions(int minimalAge){
         this.minimalAge = minimalAge;
     }
 
