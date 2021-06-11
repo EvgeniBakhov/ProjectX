@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 
@@ -103,11 +104,26 @@ public class EventService {
         }
     }
 
-    public boolean checkIfOrganizer(Event event, User user) throws NotAllowedException {
+    private boolean checkIfOrganizer(Event event, User user) throws NotAllowedException {
         if (event.getOrganizer().getId().equals(user.getId())) {
             return true;
         } else {
             throw new NotAllowedException("You are not the organizer of this event.");
+        }
+    }
+
+    public void uploadThumbnail(Long eventId, MultipartFile thumbnail, User user)
+            throws NotAllowedException, IOException, EntityNotFoundException {
+        Optional<Event> existingEvent = eventRepository.findById(eventId);
+        if (existingEvent.isPresent()) {
+            checkIfOrganizer(existingEvent.get(), user);
+            String uploadDir = PICTURE_PATH + eventId + "/";
+            Set<String> savedThumbnail = pictureService
+                    .persistPictures(uploadDir, (MultipartFile[]) Arrays.asList(thumbnail).toArray());
+            existingEvent.get().setThumbnail(savedThumbnail.stream().findFirst().get());
+            eventRepository.save(existingEvent.get());
+        } else {
+            throw new EntityNotFoundException("Estate with this id does not exist.");
         }
     }
 }

@@ -39,6 +39,9 @@ Roles and privileges system:
 Each user has only one role: NORMAL, OWNER, ORGANIZER or ADMIN. Each role has a set of privileges. Privilege - string,
 that represents activity allowed by this privilege.
 
+### Version 0.18.0
+Created new endpoint for adding thumbnail to event.
+
 ### Version 0.17.0
 Adding pictures to event and event service and picture service refactored.
 

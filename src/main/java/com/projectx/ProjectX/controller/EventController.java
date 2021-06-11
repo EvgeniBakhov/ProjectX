@@ -79,7 +79,22 @@ public class EventController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IOException e) {
-            return ResponseEntity.badRequest().body("Error peristing files");
+            return ResponseEntity.badRequest().body("Error persisting files");
+        }
+    }
+
+    @PostMapping("/{eventId}/thumbnail")
+    public ResponseEntity uploadThumbnail(@RequestParam("thumbnail") MultipartFile thumbnail,
+                                         @PathVariable Long eventId, @AuthenticationPrincipal User user) {
+        try {
+            eventService.uploadThumbnail(eventId, thumbnail, user);
+            return ResponseEntity.ok().build();
+        } catch (NotAllowedException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("Error persisting files");
         }
     }
 }
