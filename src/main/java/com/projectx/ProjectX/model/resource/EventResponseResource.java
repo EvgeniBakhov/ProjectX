@@ -29,5 +29,6 @@ public class EventResponseResource {
     private EventType type;
     private EventPlaceType placeType;
     private EventStatus status;
+    private String thumbnail;
     private Set<String> pictures;
 }

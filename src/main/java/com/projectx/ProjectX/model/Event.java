@@ -64,6 +64,9 @@ public class Event extends BaseEntity {
     @Column(name = "status")
     private EventStatus status;
 
+    @Column(name = "thumbnail")
+    private String thumbnail;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "event_picture",
             joinColumns = {
