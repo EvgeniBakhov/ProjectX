@@ -72,6 +72,8 @@ public class ProjectXSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/user/signup").permitAll()
                 .antMatchers("/login").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/v2/api-docs").permitAll()
                 .antMatchers(HttpMethod.GET, "/estate/**").permitAll()
                 .antMatchers(HttpMethod.GET, "user/**").permitAll()
                 .antMatchers(HttpMethod.GET, "event/**").permitAll()

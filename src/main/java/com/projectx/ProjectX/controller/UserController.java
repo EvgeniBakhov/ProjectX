@@ -6,6 +6,7 @@ import com.projectx.ProjectX.model.resource.UserRegistrationRequest;
 import com.projectx.ProjectX.model.resource.UserResponseResource;
 import com.projectx.ProjectX.model.resource.UserUpdateResource;
 import com.projectx.ProjectX.service.UserService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -25,6 +26,9 @@ public class UserController {
     private JavaMailSender mailSender;
 
     @PostMapping(value = "/signup")
+    @ApiOperation(
+            value = "Register user",
+            notes = "Creates new user and persists it in the db")
     public ResponseEntity registerUser(@RequestBody UserRegistrationRequest request) {
         try {
             UserResponseResource response = userService.register(request);
@@ -32,11 +36,6 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
-    }
-
-    @GetMapping(value = "/test")
-    public String test() {
-        return "Test";
     }
 
     @PutMapping()
