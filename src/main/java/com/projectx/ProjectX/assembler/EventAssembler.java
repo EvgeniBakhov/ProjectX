@@ -42,7 +42,9 @@ public class EventAssembler {
         existingEvent.setAddress(request.getAddress());
         existingEvent.setType(request.getType());
         existingEvent.setPlaceType(request.getPlaceType());
-        existingEvent.setPlaceType(request.getPlaceType());
+        if (request.getStartDate().equals(existingEvent.getStartDate())) {
+            existingEvent.setStatus(EventStatus.POSTPONED);
+        }
         return existingEvent;
     }
 }

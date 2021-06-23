@@ -53,22 +53,24 @@ public class UserService {
         }
         User user = userAssembler.fromRegistrationRequest(request);
         User savedUser = userRepository.save(user);
-        return userResponseAssembler.fromUser(user);
+        return userResponseAssembler.fromUser(savedUser);
     }
 
-    public void updateUserProfile(User principal, UserUpdateResource resource) throws EntityNotFoundException {
+    public UserResponseResource updateUserProfile(User principal, UserUpdateResource resource) throws EntityNotFoundException {
         Optional<User> existingUser = userRepository.findById(principal.getId());
+        User updatedUser = null;
         if (existingUser.isPresent()) {
-            User updatedUser = userAssembler.fromUpdateResource(principal, resource);
-            userRepository.save(updatedUser);
+            updatedUser = userAssembler.fromUpdateResource(principal, resource);
+            updatedUser = userRepository.save(updatedUser);
         } else {
             throw new EntityNotFoundException("User with this id is not found");
         }
+        return userResponseAssembler.fromUser(updatedUser);
     }
 
     public UserResponseResource findUserById(Long userId) {
         Optional<User> user = userRepository.findById(userId);
-        return user.isPresent() ? null : userResponseAssembler.fromUser(user.get());
+        return !user.isPresent() ? null : userResponseAssembler.fromUser(user.get());
     }
 
     public User findUserByEmail(String email) {

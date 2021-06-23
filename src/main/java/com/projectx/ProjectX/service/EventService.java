@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 
@@ -34,25 +35,27 @@ public class EventService {
     @Autowired
     EventResponseAssembler eventResponseAssembler;
 
-    public boolean createEvent(EventCreateRequest request, User user) {
+    public EventResponseResource createEvent(EventCreateRequest request, User user) {
         EventAssembler eventAssembler = new EventAssembler();
         Event event = eventAssembler.fromCreateRequest(request, user);
         try {
             if (validateEvent(event)) {
-                eventRepository.save(event);
+                event = eventRepository.save(event);
             }
         } catch (Exception e) {
-            return false;
+            return null;
         }
-        return true;
+        return eventResponseAssembler.fromEvent(event);
     }
 
     public void updateEvent(Long eventId, EventUpdateRequest request, User user) throws EntityNotFoundException, NotAllowedException {
         Optional<Event> existingEvent = eventRepository.findById(eventId);
-        EventAssembler eventAssembler = new EventAssembler();
         if (existingEvent.isPresent()) {
             if (existingEvent.get().getOrganizer().getId().equals(user.getId())) {
-                Event updatedEvent = eventAssembler.fromUpdateRequest(request, existingEvent.get());
+                Event updatedEvent = createUpdateEvent(request, existingEvent.get());
+                if (updatedEvent == null) {
+                    throw new NotAllowedException("Update values not valid.");
+                }
                 eventRepository.save(updatedEvent);
             } else {
                 throw new NotAllowedException("You are not the organizer of this event.");
@@ -87,7 +90,9 @@ public class EventService {
     }
 
     private boolean validateEvent(Event event) {
-        return event.getCapacity() < 1000;
+        return event.getCapacity() < 1000
+                && event.getStartDate().before(event.getEndDate())
+                && event.getStartDate().after(new Date());
     }
 
     public void uploadPictures(Long eventId, MultipartFile[] pictures, User user)
@@ -125,5 +130,13 @@ public class EventService {
         } else {
             throw new EntityNotFoundException("Estate with this id does not exist.");
         }
+    }
+
+    private Event createUpdateEvent(EventUpdateRequest request, Event event) {
+        if (event.getStartDate().after(request.getStartDate())) {
+            return null;
+        }
+        EventAssembler eventAssembler = new EventAssembler();
+        return eventAssembler.fromUpdateRequest(request, event);
     }
 }

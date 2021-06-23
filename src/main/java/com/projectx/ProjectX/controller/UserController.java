@@ -39,14 +39,15 @@ public class UserController {
     }
 
     @PutMapping()
-    public ResponseEntity<Void> updateUserDetails(@RequestBody UserUpdateResource resource,
+    public ResponseEntity updateUserDetails(@RequestBody UserUpdateResource resource,
                                                   @AuthenticationPrincipal User user) {
+        UserResponseResource updatedUser = null;
         try {
-            userService.updateUserProfile(user, resource);
+           updatedUser = userService.updateUserProfile(user, resource);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(updatedUser);
     }
 
     @PreAuthorize("hasAuthority('DELETE_USER')")
@@ -86,6 +87,11 @@ public class UserController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping(value ="/authenticated")
+    public ResponseEntity getAuthUser(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(user);
     }
 
 //    @PostMapping("/resetPassword")

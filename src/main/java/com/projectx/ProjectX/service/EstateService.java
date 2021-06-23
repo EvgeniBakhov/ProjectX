@@ -33,19 +33,21 @@ public class EstateService {
     @Autowired
     EstateResponseAssembler estateResponseAssembler;
 
-    public boolean publishEstate(EstateCreateRequest request, User owner) {
+    public EstateResponseResource publishEstate(EstateCreateRequest request, User owner) {
         EstateAssembler estateAssembler = new EstateAssembler();
+        Estate estate;
         try {
-            Estate estate = estateAssembler.fromCreateRequest(request, owner);
-            estateRepository.save(estate);
+            estate = estateAssembler.fromCreateRequest(request, owner);
+            estate = estateRepository.save(estate);
         } catch (Exception e) {
-            return false;
+            return null;
         }
-        return true;
+        return estateResponseAssembler.fromEstate(estate);
     }
 
-    public Optional<Estate> findEstateById(Long estateId) {
-        return estateRepository.findById(estateId);
+    public EstateResponseResource findEstateById(Long estateId) {
+        EstateResponseResource estate = estateResponseAssembler.fromEstate(estateRepository.findById(estateId).get());
+        return estate;
     }
 
     public Optional<List<Estate>> findEstatesByOwnerId(Long ownerId) {

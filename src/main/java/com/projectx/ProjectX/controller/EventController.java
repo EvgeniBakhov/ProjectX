@@ -27,9 +27,12 @@ public class EventController {
 
     @PreAuthorize("hasAuthority('PUBLISH_EVENT')")
     @PostMapping()
-    public ResponseEntity<Event> createEvent(@RequestBody EventCreateRequest request, @AuthenticationPrincipal User user) {
-        eventService.createEvent(request, user);
-        return ResponseEntity.ok().build();
+    public ResponseEntity createEvent(@RequestBody EventCreateRequest request, @AuthenticationPrincipal User user) {
+        EventResponseResource response = eventService.createEvent(request, user);
+        if (response == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().body(response);
     }
 
     @PutMapping(value = "/{eventId}")
