@@ -8,7 +8,5 @@ public enum UserType {
     @JsonProperty("owner")
     OWNER,
     @JsonProperty("organizer")
-    ORGANIZER,
-    @JsonProperty("admin")
-    ADMIN
+    ORGANIZER
 }

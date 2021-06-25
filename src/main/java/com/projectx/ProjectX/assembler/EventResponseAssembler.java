@@ -6,6 +6,9 @@ import com.projectx.ProjectX.model.resource.EventResponseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class EventResponseAssembler {
 
@@ -13,6 +16,9 @@ public class EventResponseAssembler {
     UserResponseAssembler userResponseAssembler;
 
     public EventResponseResource fromEvent(Event event) {
+        if (event == null) {
+            return null;
+        }
         EventResponseResource eventResponseResource = new EventResponseResource();
         eventResponseResource.setId(event.getId());
         eventResponseResource.setName(event.getName());
@@ -30,5 +36,14 @@ public class EventResponseAssembler {
         eventResponseResource.setPictures(event.getPictures());
         eventResponseResource.setThumbnail(event.getThumbnail());
         return eventResponseResource;
+    }
+
+    public List<EventResponseResource> fromEventList(List<Event> events) {
+        if (events == null) {
+            return null;
+        }
+        List<EventResponseResource> eventResponseResources = new ArrayList<>();
+        events.stream().forEach(event -> eventResponseResources.add(fromEvent(event)));
+        return eventResponseResources;
     }
 }

@@ -1,8 +1,9 @@
 package com.projectx.ProjectX.controller;
 
+import com.projectx.ProjectX.enums.EventPlaceType;
+import com.projectx.ProjectX.enums.EventType;
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.NotAllowedException;
-import com.projectx.ProjectX.model.Event;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.EventCreateRequest;
 import com.projectx.ProjectX.model.resource.EventResponseResource;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/event")
@@ -28,9 +30,11 @@ public class EventController {
     @PreAuthorize("hasAuthority('PUBLISH_EVENT')")
     @PostMapping()
     public ResponseEntity createEvent(@RequestBody EventCreateRequest request, @AuthenticationPrincipal User user) {
-        EventResponseResource response = eventService.createEvent(request, user);
-        if (response == null) {
-            return ResponseEntity.badRequest().build();
+        EventResponseResource response = null;
+        try {
+            response = eventService.createEvent(request, user);
+        } catch (Exception exception) {
+            return ResponseEntity.badRequest().body(exception.getMessage());
         }
         return ResponseEntity.ok().body(response);
     }
@@ -99,5 +103,22 @@ public class EventController {
         } catch (IOException e) {
             return ResponseEntity.badRequest().body("Error persisting files");
         }
+    }
+
+    @GetMapping("/top")
+    public ResponseEntity getTopEvent(@AuthenticationPrincipal User user) {
+        EventResponseResource event = eventService.findTopEvent(user);
+        return ResponseEntity.ok(event);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity getAllEventsWithFilter(@RequestParam(value = "city", defaultValue = "") String city,
+                                                 @RequestParam(value = "type", defaultValue = "") String type,
+                                                 @RequestParam(value = "placeType", defaultValue = "") String placeType,
+                                                 @RequestParam(value = "status", defaultValue = "") String status,
+                                                 @RequestParam(value = "availableSeats", defaultValue = "") String availableSeats,
+                                                 @RequestParam(value = "ageRestrictions", defaultValue = "") String ageRestrictions) {
+        List<EventResponseResource> events = eventService.findAllWithFilters(city, type, placeType, status, availableSeats, ageRestrictions);
+        return ResponseEntity.ok(events);
     }
 }

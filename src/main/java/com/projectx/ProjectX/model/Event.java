@@ -62,6 +62,7 @@ public class Event extends BaseEntity {
     private EventPlaceType placeType;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private EventStatus status;
 
     @Column(name = "thumbnail")

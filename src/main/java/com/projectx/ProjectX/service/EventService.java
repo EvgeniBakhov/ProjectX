@@ -1,6 +1,9 @@
 package com.projectx.ProjectX.service;
 
 import com.projectx.ProjectX.assembler.EventAssembler;
+import com.projectx.ProjectX.enums.EventPlaceType;
+import com.projectx.ProjectX.enums.EventStatus;
+import com.projectx.ProjectX.enums.EventType;
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.NotAllowedException;
 import com.projectx.ProjectX.model.Event;
@@ -15,10 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -35,15 +36,17 @@ public class EventService {
     @Autowired
     EventResponseAssembler eventResponseAssembler;
 
-    public EventResponseResource createEvent(EventCreateRequest request, User user) {
+    public EventResponseResource createEvent(EventCreateRequest request, User user) throws Exception {
         EventAssembler eventAssembler = new EventAssembler();
         Event event = eventAssembler.fromCreateRequest(request, user);
         try {
             if (validateEvent(event)) {
-                event = eventRepository.save(event);
+                 event = eventRepository.save(event);
+            } else {
+                throw new NotAllowedException("Some of the fields are not valid.");
             }
         } catch (Exception e) {
-            return null;
+            throw new Exception("Event creation failed due to unkhown error");
         }
         return eventResponseAssembler.fromEvent(event);
     }
@@ -138,5 +141,30 @@ public class EventService {
         }
         EventAssembler eventAssembler = new EventAssembler();
         return eventAssembler.fromUpdateRequest(request, event);
+    }
+
+    public EventResponseResource findTopEvent(User user) {
+        List<Event> events = eventRepository.findAll(user.getAddress().getCity(), "", "", EventStatus.PLANNED.toString(), "", "");
+        return eventResponseAssembler.fromEvent(extractTop(events));
+    }
+
+    private Event extractTop(List<Event> events) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, 7);
+        Date nextWeek = calendar.getTime();
+        events = events.stream().filter(event -> event.getStartDate().before(nextWeek)).collect(Collectors.toList());
+        return events.size() == 0 ? null : events.get((int)(Math.random()*(events.size()-1)));
+    }
+
+    public List<EventResponseResource> findAllWithFilters(String city, String type, String placeType, String status, String availableSeats, String ageRestrictions) {
+        List<Event> events = eventRepository.findAll(
+                city,
+                type,
+                placeType,
+                status, ageRestrictions, availableSeats);
+        if (events.size() > 0) {
+            return eventResponseAssembler.fromEventList(events);
+        }
+        return null;
     }
 }
