@@ -1,7 +1,6 @@
 package com.projectx.ProjectX.model;
 
 import com.projectx.ProjectX.enums.UserType;
-import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;

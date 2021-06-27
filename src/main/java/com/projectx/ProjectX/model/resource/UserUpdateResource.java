@@ -8,8 +8,11 @@ import lombok.Setter;
 @Setter
 public class UserUpdateResource {
 
+    private String firstName;
+    private String lastName;
+    private int age;
+    private String email;
     private String phone;
-    private String picture;
     private Address address;
 
 }

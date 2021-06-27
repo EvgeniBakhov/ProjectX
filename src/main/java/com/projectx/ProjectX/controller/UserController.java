@@ -1,6 +1,7 @@
 package com.projectx.ProjectX.controller;
 
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
+import com.projectx.ProjectX.model.GenericError;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.UserRegistrationRequest;
 import com.projectx.ProjectX.model.resource.UserResponseResource;
@@ -8,12 +9,19 @@ import com.projectx.ProjectX.model.resource.UserUpdateResource;
 import com.projectx.ProjectX.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Date;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -34,7 +42,7 @@ public class UserController {
             UserResponseResource response = userService.register(request);
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(new GenericError(new Date(), e.getMessage(), ""));
         }
     }
 
@@ -45,7 +53,7 @@ public class UserController {
         try {
            updatedUser = userService.updateUserProfile(user, resource);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(new GenericError(new Date(), e.getMessage(), ""));
         }
         return ResponseEntity.ok().body(updatedUser);
     }
@@ -60,10 +68,11 @@ public class UserController {
     }
 
     @GetMapping(value = "/{userId}")
-    public ResponseEntity<UserResponseResource> getUserById(@PathVariable Long userId) {
+    public ResponseEntity getUserById(@PathVariable Long userId) {
         UserResponseResource response = userService.findUserById(userId);
         if (response == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new GenericError(new Date(), "User is not found.", "Does not exist."));
         }
         return ResponseEntity.ok().body(response);
     }
@@ -92,6 +101,21 @@ public class UserController {
     @GetMapping(value ="/authenticated")
     public ResponseEntity getAuthUser(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(user);
+    }
+
+    @GetMapping(value = "{userId}/picture", produces = MediaType.IMAGE_JPEG_VALUE)
+    public @ResponseBody byte[] getPicture(@PathVariable Long userId) {
+        Path url = null;
+        try {
+            url = this.userService.getPictureUrl(userId);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+        try {
+            return Files.readAllBytes(url);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 //    @PostMapping("/resetPassword")

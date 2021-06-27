@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -166,5 +168,19 @@ public class EventService {
             return eventResponseAssembler.fromEventList(events);
         }
         return null;
+    }
+
+    public Path getThumbnailUrl(Long eventId) throws EntityNotFoundException {
+        Optional<Event> event = eventRepository.findById(eventId);
+
+        if (event.isPresent()) {
+            return Paths.get(event.get().getThumbnail());
+        } else {
+            throw new EntityNotFoundException("Event with this id not found.");
+        }
+    }
+
+    public List<String> getAllCities() {
+        return eventRepository.findAllCities();
     }
 }

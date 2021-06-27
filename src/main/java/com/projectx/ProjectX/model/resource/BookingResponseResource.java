@@ -17,5 +17,6 @@ public class BookingResponseResource {
     private UserResponseResource user;
     private BookingStatus status;
     private String comment;
+    private Double totalPrice;
 
 }

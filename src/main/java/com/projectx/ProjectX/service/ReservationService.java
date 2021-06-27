@@ -42,8 +42,6 @@ public class ReservationService {
                     && checkPlaces(event.get())
                     && checkEsrbRate(user, event.get())) {
                 Reservation reservation = getDefaultReservation(user, event.get());
-                event.get().setAvailableSeats(event.get().getAvailableSeats() - 1);
-                eventRepository.save(event.get());
                 reservationRepository.save(reservation);
             }
         } else {
@@ -61,7 +59,7 @@ public class ReservationService {
     }
 
     private boolean checkEventStatus(Event event) {
-        return EventStatus.RIGHT_NOW.equals(event.getStatus()) || EventStatus.CANCELLED.equals(event.getStatus());
+        return !(EventStatus.RIGHT_NOW.equals(event.getStatus()) && EventStatus.CANCELLED.equals(event.getStatus()));
     }
 
     private boolean checkExistingReservation(Event event, User user) {
@@ -90,9 +88,12 @@ public class ReservationService {
             throws EntityNotFoundException, NotAllowedException {
         Optional<Reservation> reservation = reservationRepository.findById(reservationId);
         if (reservation.isPresent()) {
-            if (reservation.get().getEvent().getOrganizer().getId().equals(user.getId())
+            Event event = reservation.get().getEvent();
+            if (event.getOrganizer().getId().equals(user.getId())
                     || !ReservationStatus.CANCELLED.equals(reservation.get().getStatus())) {
                 reservation.get().setStatus(ReservationStatus.APPROVED);
+                event.setAvailableSeats(event.getAvailableSeats() - 1);
+                eventRepository.save(event);
                 reservationRepository.save(reservation.get());
                 return true;
             } else {
@@ -107,6 +108,11 @@ public class ReservationService {
         Optional<Reservation> reservation = reservationRepository.findById(reservationId);
         if (reservation.isPresent()) {
             if (reservation.get().getEvent().getOrganizer().getId().equals(user.getId())) {
+                if (reservation.get().getStatus().equals(ReservationStatus.APPROVED)) {
+                    Event event = reservation.get().getEvent();
+                    event.setAvailableSeats(event.getAvailableSeats() + 1);
+                    eventRepository.save(event);
+                }
                 reservation.get().setStatus(ReservationStatus.CANCELLED);
                 reservationRepository.save(reservation.get());
                 return true;

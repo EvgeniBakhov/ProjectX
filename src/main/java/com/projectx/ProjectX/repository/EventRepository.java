@@ -18,10 +18,13 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND str(e.status) LIKE %?4% " +
             "AND str(e.ageRestrictions) LIKE %?5% " +
             "AND str(e.availableSeats) LIKE %?6%")
-    public List<Event> findAll(String city,
+    List<Event> findAll(String city,
                                String type,
                                String placeType,
                                String status,
                                String ageRestrictions,
                                String availableSeats);
+
+    @Query("SELECT e.address.city FROM Event e")
+    List<String> findAllCities();
 }

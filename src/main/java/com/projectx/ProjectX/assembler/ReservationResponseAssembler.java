@@ -19,7 +19,6 @@ public class ReservationResponseAssembler {
     public ReservationResponseResource fromReservation(Reservation reservation) {
         ReservationResponseResource resource = new ReservationResponseResource();
         resource.setId(reservation.getId());
-        resource.setPrice(reservation.getPrice());
         resource.setUser(userResponseAssembler.fromUser(reservation.getUser()));
         resource.setEvent(eventResponseAssembler.fromEvent(reservation.getEvent()));
         resource.setStatus(reservation.getStatus());

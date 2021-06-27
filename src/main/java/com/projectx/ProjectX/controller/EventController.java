@@ -11,6 +11,7 @@ import com.projectx.ProjectX.model.resource.EventUpdateRequest;
 import com.projectx.ProjectX.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 @RestController
@@ -120,5 +123,26 @@ public class EventController {
                                                  @RequestParam(value = "ageRestrictions", defaultValue = "") String ageRestrictions) {
         List<EventResponseResource> events = eventService.findAllWithFilters(city, type, placeType, status, availableSeats, ageRestrictions);
         return ResponseEntity.ok(events);
+    }
+
+    @GetMapping(value = "/{eventId}/thumbnail", produces = MediaType.IMAGE_JPEG_VALUE)
+    public @ResponseBody byte[] getEventThumbnail(@PathVariable Long eventId) {
+        Path url = null;
+        try {
+            url = this.eventService.getThumbnailUrl(eventId);
+        } catch (EntityNotFoundException e) {
+            return null;
+        }
+        try {
+            return Files.readAllBytes(url);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    @GetMapping(value = "/cities")
+    public ResponseEntity getAllCities() {
+        List<String> cities = eventService.getAllCities();
+        return ResponseEntity.ok(cities);
     }
 }

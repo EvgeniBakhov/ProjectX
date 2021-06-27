@@ -1,12 +1,9 @@
 package com.projectx.ProjectX.model.resource;
 
+import com.projectx.ProjectX.enums.UserType;
 import com.projectx.ProjectX.model.Address;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.usertype.UserType;
-
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 
 @Getter
 @Setter
@@ -20,6 +17,6 @@ public class UserRegistrationRequest {
     private String password;
     private String phone;
     private Address address;
-    private String type;
+    private UserType type;
 
 }

@@ -31,7 +31,7 @@ public class ReservationController {
         }
     }
 
-    @PutMapping(value = "/{reservationId}/cancel")
+    @GetMapping(value = "/{reservationId}/cancel")
     public ResponseEntity cancelReservation(@PathVariable Long reservationId, @AuthenticationPrincipal User user) {
         try {
             reservationService.cancelReservation(reservationId, user);
@@ -43,7 +43,7 @@ public class ReservationController {
         }
     }
 
-    @PutMapping(value = "/{reservationId}/approve")
+    @GetMapping(value = "/{reservationId}/approve")
     public ResponseEntity approveReservation(@PathVariable Long reservationId, @AuthenticationPrincipal User user) {
         try {
             reservationService.approveReservation(reservationId, user);

@@ -39,6 +39,9 @@ Roles and privileges system:
 Each user has only one role: NORMAL, OWNER, ORGANIZER or ADMIN. Each role has a set of privileges. Privilege - string,
 that represents activity allowed by this privilege.
 
+### Version 0.20.0
+Update user checks added. Created endpoint for retrieving all cities.
+
 ### Version 0.19.0
 Removed ADMIN role (will be delivered in the future). Added event filter search and top event endpoint.
 

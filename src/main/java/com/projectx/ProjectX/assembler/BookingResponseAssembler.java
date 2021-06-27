@@ -26,6 +26,7 @@ public class BookingResponseAssembler {
         resource.setComment(booking.getComment());
         resource.setEstate(estateResponseAssembler.fromEstate(booking.getEstate()));
         resource.setUser(userResponseAssembler.fromUser(booking.getUser()));
+        resource.setTotalPrice(booking.getTotalPrice());
         return resource;
     }
 

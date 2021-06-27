@@ -21,9 +21,6 @@ public class Reservation extends BaseEntity{
     @JoinColumn(name = "event_id", referencedColumnName = "id")
     private Event event;
 
-    @Column(name = "price")
-    private Double price;
-
     @ManyToOne()
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
