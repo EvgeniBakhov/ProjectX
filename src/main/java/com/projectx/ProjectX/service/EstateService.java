@@ -5,6 +5,7 @@ import com.projectx.ProjectX.assembler.EstateResponseAssembler;
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.NotAllowedException;
 import com.projectx.ProjectX.model.Estate;
+import com.projectx.ProjectX.model.Event;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.EstateCreateRequest;
 import com.projectx.ProjectX.model.resource.EstateResponseResource;
@@ -104,6 +105,18 @@ public class EstateService {
         } else {
             throw new EntityNotFoundException("Estate with this id does not exist.");
         }
+    }
+
+    public List<EstateResponseResource> findAllWithFilters(String city,
+                                          String type,
+                                          int minBeds,
+                                          int maxBeds,
+                                          Double minArea,
+                                          Double maxArea,
+                                          Double minPrice,
+                                          Double maxPrice) {
+        List<Estate> estates = estateRepository.findAll(city, type, minBeds,maxBeds, minArea, maxArea, minPrice, maxPrice);
+        return estateResponseAssembler.fromEstateList(estates);
     }
 
     private void checkIfOwner(Estate existingEstate, User user) throws NotAllowedException {

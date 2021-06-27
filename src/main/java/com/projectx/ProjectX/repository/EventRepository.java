@@ -25,6 +25,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                                String ageRestrictions,
                                String availableSeats);
 
-    @Query("SELECT e.address.city FROM Event e")
+    @Query("SELECT DISTINCT e.address.city FROM Event e")
     List<String> findAllCities();
 }

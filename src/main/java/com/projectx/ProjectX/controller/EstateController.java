@@ -101,4 +101,25 @@ public class EstateController {
             return ResponseEntity.badRequest().body("Error peristing files");
         }
     }
+
+    @GetMapping("/all")
+    public ResponseEntity getAllEstatesWithFilter(@RequestParam(value = "city", defaultValue = "") String city,
+                                   @RequestParam(value = "type", defaultValue = "") String type,
+                                   @RequestParam(value = "minBeds", defaultValue = "0") int minBeds,
+                                   @RequestParam(value = "maxBeds", defaultValue = "50") int maxBeds,
+                                   @RequestParam(value = "minArea", defaultValue = "0.0") Double minArea,
+                                   @RequestParam(value = "maxArea", defaultValue = "10000") Double maxArea,
+                                   @RequestParam(value = "minPrice", defaultValue = "0.0") Double minPrice,
+                                   @RequestParam(value = "maxPrice", defaultValue = "10000") Double maxPrice) {
+        List<EstateResponseResource> estates = estateService.findAllWithFilters(
+                city,
+                type,
+                minBeds,
+                maxBeds,
+                minArea,
+                maxArea,
+                minPrice,
+                maxPrice);
+        return ResponseEntity.ok(estates);
+    }
 }

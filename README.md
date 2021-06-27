@@ -39,6 +39,9 @@ Roles and privileges system:
 Each user has only one role: NORMAL, OWNER, ORGANIZER or ADMIN. Each role has a set of privileges. Privilege - string,
 that represents activity allowed by this privilege.
 
+### Version 0.21.0
+Added filtered search for estates.
+
 ### Version 0.20.0
 Update user checks added. Created endpoint for retrieving all cities.
 

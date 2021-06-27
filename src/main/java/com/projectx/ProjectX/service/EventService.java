@@ -164,10 +164,7 @@ public class EventService {
                 type,
                 placeType,
                 status, ageRestrictions, availableSeats);
-        if (events.size() > 0) {
-            return eventResponseAssembler.fromEventList(events);
-        }
-        return null;
+        return eventResponseAssembler.fromEventList(events);
     }
 
     public Path getThumbnailUrl(Long eventId) throws EntityNotFoundException {

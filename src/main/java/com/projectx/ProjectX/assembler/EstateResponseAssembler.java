@@ -5,6 +5,9 @@ import com.projectx.ProjectX.model.resource.EstateResponseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class EstateResponseAssembler {
 
@@ -23,5 +26,11 @@ public class EstateResponseAssembler {
         estateResponseResource.setPictures(estate.getPictures());
         estateResponseResource.setOwner(userResponseAssembler.fromUser(estate.getOwner()));
         return estateResponseResource;
+    }
+
+    public List<EstateResponseResource> fromEstateList(List<Estate> estates) {
+        List<EstateResponseResource> resourceList = new ArrayList<>();
+        estates.stream().forEach(estate -> resourceList.add(fromEstate(estate)));
+        return resourceList;
     }
 }
