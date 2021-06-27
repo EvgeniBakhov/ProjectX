@@ -122,4 +122,10 @@ public class EstateController {
                 maxPrice);
         return ResponseEntity.ok(estates);
     }
+
+    @GetMapping("/cities")
+    public ResponseEntity getCities() {
+        List<String> cities = estateService.getAllCities();
+        return ResponseEntity.ok(cities);
+    }
 }

@@ -128,4 +128,7 @@ public class EstateService {
     }
 
 
+    public List<String> getAllCities() {
+        return estateRepository.findAllCities();
+    }
 }
