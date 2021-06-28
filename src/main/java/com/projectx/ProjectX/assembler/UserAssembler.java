@@ -1,5 +1,6 @@
 package com.projectx.ProjectX.assembler;
 
+import com.projectx.ProjectX.enums.UserType;
 import com.projectx.ProjectX.model.Role;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.UserRegistrationRequest;
@@ -21,7 +22,7 @@ public class UserAssembler {
 
     public User fromUpdateResource(User user, UserUpdateResource resource) {
         user.setPhone(resource.getPhone() == null ? user.getPhone() : resource.getPhone());
-        if (resource.getAddress() != null && user.getAddress().equals(resource.getAddress())) {
+        if (resource.getAddress() != null && !user.getAddress().equals(resource.getAddress())) {
             user.getAddress().setRegion(resource.getAddress().getRegion() == null  ?
                     user.getAddress().getRegion() : resource.getAddress().getRegion());
             user.getAddress().setCountry(resource.getAddress().getCountry() == null  ?
@@ -60,7 +61,7 @@ public class UserAssembler {
         user.setAddress(request.getAddress());
         user.setPhone(request.getPhone());
         user.setEmailVerified(false);
-        user.setType(request.getType());
+        user.setType(UserType.valueOf(request.getType()));
         Optional<Role> role = roleRepository.findByName("ROLE_" + request.getType());
         user.setRoles(Arrays.asList(role.isPresent() ? role.get() : roleRepository.findByName("ROLE_NORMAL").get()));
         user.setCreatedBy("system");

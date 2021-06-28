@@ -17,4 +17,9 @@ public class GenericError {
     private String message;
     private String cause;
 
+    public GenericError(String message, String cause) {
+        this.timestamp = new Date();
+        this.message = message;
+        this.cause = cause;
+    }
 }

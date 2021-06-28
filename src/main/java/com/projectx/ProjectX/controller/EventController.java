@@ -4,6 +4,7 @@ import com.projectx.ProjectX.enums.EventPlaceType;
 import com.projectx.ProjectX.enums.EventType;
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.NotAllowedException;
+import com.projectx.ProjectX.model.GenericError;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.EventCreateRequest;
 import com.projectx.ProjectX.model.resource.EventResponseResource;
@@ -46,14 +47,15 @@ public class EventController {
     public ResponseEntity updateEvent(@PathVariable Long eventId,
                                              @RequestBody EventUpdateRequest request,
                                              @AuthenticationPrincipal User user) {
+        EventResponseResource updatedEvent = null;
         try {
-            eventService.updateEvent(eventId, request, user);
+            updatedEvent = eventService.updateEvent(eventId, request, user);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (NotAllowedException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new GenericError(e.getMessage(), ""));
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(updatedEvent);
     }
 
     @DeleteMapping(value = "/{eventId}")

@@ -40,7 +40,7 @@ public class Estate extends BaseEntity {
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 1024)
     private String description;
 
     @ElementCollection(fetch = FetchType.EAGER)

@@ -34,7 +34,7 @@ public class ReservationService {
     @Autowired
     ReservationResponseAssembler reservationResponseAssembler;
 
-    public ReservationResponseResource createReservation(Long eventId, User user) throws EntityNotFoundException {
+    public ReservationResponseResource createReservation(Long eventId, User user) throws EntityNotFoundException, NotAllowedException {
         Optional<Event> event = eventRepository.findById(eventId);
         if (event.isPresent()) {
             if(checkEventStatus(event.get())
@@ -42,12 +42,14 @@ public class ReservationService {
                     && checkPlaces(event.get())
                     && checkEsrbRate(user, event.get())) {
                 Reservation reservation = getDefaultReservation(user, event.get());
-                reservationRepository.save(reservation);
+                reservation = reservationRepository.save(reservation);
+                return reservationResponseAssembler.fromReservation(reservation);
+            } else {
+                throw new NotAllowedException("Not allowed reservation. Maybe you have one already.");
             }
         } else {
             throw new EntityNotFoundException("Event with this id does not exist.");
         }
-        return null;
     }
 
     private boolean checkPlaces(Event event) {
@@ -107,7 +109,8 @@ public class ReservationService {
     public boolean cancelReservation(Long reservationId, User user) throws NotAllowedException, EntityNotFoundException {
         Optional<Reservation> reservation = reservationRepository.findById(reservationId);
         if (reservation.isPresent()) {
-            if (reservation.get().getEvent().getOrganizer().getId().equals(user.getId())) {
+            if (reservation.get().getEvent().getOrganizer().getId().equals(user.getId())
+                    || reservation.get().getUser().getId().equals(user.getId())) {
                 if (reservation.get().getStatus().equals(ReservationStatus.APPROVED)) {
                     Event event = reservation.get().getEvent();
                     event.setAvailableSeats(event.getAvailableSeats() + 1);

@@ -2,6 +2,7 @@ package com.projectx.ProjectX.controller;
 
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.NotAllowedException;
+import com.projectx.ProjectX.model.GenericError;
 import com.projectx.ProjectX.model.User;
 import com.projectx.ProjectX.model.resource.ReservationResponseResource;
 import com.projectx.ProjectX.service.ReservationService;
@@ -26,8 +27,8 @@ public class ReservationController {
         try {
             ReservationResponseResource reservation = reservationService.createReservation(eventId, user);
             return ResponseEntity.ok().body(reservation);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new GenericError(e.getMessage(), ""));
         }
     }
 

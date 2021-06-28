@@ -1,9 +1,7 @@
 package com.projectx.ProjectX.service;
 
 import com.projectx.ProjectX.assembler.EventAssembler;
-import com.projectx.ProjectX.enums.EventPlaceType;
 import com.projectx.ProjectX.enums.EventStatus;
-import com.projectx.ProjectX.enums.EventType;
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.NotAllowedException;
 import com.projectx.ProjectX.model.Event;
@@ -13,6 +11,7 @@ import com.projectx.ProjectX.assembler.EventResponseAssembler;
 import com.projectx.ProjectX.model.resource.EventResponseResource;
 import com.projectx.ProjectX.model.resource.EventUpdateRequest;
 import com.projectx.ProjectX.repository.EventRepository;
+import com.projectx.ProjectX.util.FileSaver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,7 +52,7 @@ public class EventService {
         return eventResponseAssembler.fromEvent(event);
     }
 
-    public void updateEvent(Long eventId, EventUpdateRequest request, User user) throws EntityNotFoundException, NotAllowedException {
+    public EventResponseResource updateEvent(Long eventId, EventUpdateRequest request, User user) throws EntityNotFoundException, NotAllowedException {
         Optional<Event> existingEvent = eventRepository.findById(eventId);
         if (existingEvent.isPresent()) {
             if (existingEvent.get().getOrganizer().getId().equals(user.getId())) {
@@ -61,7 +60,8 @@ public class EventService {
                 if (updatedEvent == null) {
                     throw new NotAllowedException("Update values not valid.");
                 }
-                eventRepository.save(updatedEvent);
+                updatedEvent = eventRepository.save(updatedEvent);
+                return eventResponseAssembler.fromEvent(updatedEvent);
             } else {
                 throw new NotAllowedException("You are not the organizer of this event.");
             }
@@ -128,9 +128,9 @@ public class EventService {
         if (existingEvent.isPresent()) {
             checkIfOrganizer(existingEvent.get(), user);
             String uploadDir = PICTURE_PATH + eventId + "/";
-            Set<String> savedThumbnail = pictureService
-                    .persistPictures(uploadDir, (MultipartFile[]) Arrays.asList(thumbnail).toArray());
-            existingEvent.get().setThumbnail(savedThumbnail.stream().findFirst().get());
+            FileSaver saver = new FileSaver();
+            Path savedThumbnail = saver.savePicture(thumbnail, uploadDir);
+            existingEvent.get().setThumbnail(savedThumbnail.toString());
             eventRepository.save(existingEvent.get());
         } else {
             throw new EntityNotFoundException("Estate with this id does not exist.");
@@ -170,7 +170,7 @@ public class EventService {
     public Path getThumbnailUrl(Long eventId) throws EntityNotFoundException {
         Optional<Event> event = eventRepository.findById(eventId);
 
-        if (event.isPresent()) {
+        if (event.isPresent() && event.get().getThumbnail() != null) {
             return Paths.get(event.get().getThumbnail());
         } else {
             throw new EntityNotFoundException("Event with this id not found.");

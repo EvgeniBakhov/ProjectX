@@ -25,7 +25,7 @@ public class Event extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 1024)
     private String description;
 
     @Column(name = "start_date")
