@@ -42,7 +42,7 @@ public class BookingService {
     @Autowired
     BookingResponseAssembler bookingResponseAssembler;
 
-    public Booking bookEstate(Long estateId, User user, BookingRequest bookingRequest) throws InvalidBookingException, EntityNotFoundException {
+    public BookingResponseResource bookEstate(Long estateId, User user, BookingRequest bookingRequest) throws InvalidBookingException, EntityNotFoundException {
         Optional<Estate> existingEstate = estateRepository.findById(estateId);
         if (!existingEstate.isPresent()) {
             throw new EntityNotFoundException("Estate with this id does not exist.");
@@ -57,7 +57,7 @@ public class BookingService {
         } else {
             throw new InvalidBookingException("fromDate must be before the toDate");
         }
-        return booking;
+        return bookingResponseAssembler.fromBooking(booking);
     }
 
     public void updateBooking(Long bookingId, User user, UpdateBookingRequest request)

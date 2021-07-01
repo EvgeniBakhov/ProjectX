@@ -1,5 +1,6 @@
 package com.projectx.ProjectX.controller;
 
+import com.projectx.ProjectX.assembler.BookingResponseAssembler;
 import com.projectx.ProjectX.enums.BookingStatus;
 import com.projectx.ProjectX.exceptions.EntityNotFoundException;
 import com.projectx.ProjectX.exceptions.InvalidBookingException;
@@ -29,13 +30,17 @@ public class BookingController {
     @Autowired
     BookingService bookingService;
 
+    @Autowired
+    BookingResponseAssembler assembler;
+
     @PostMapping(value = "/{estateId}")
     @PreAuthorize("hasAnyAuthority('BOOK_ESTATE')")
     public ResponseEntity bookEstate(@PathVariable Long estateId,
                                      @AuthenticationPrincipal User user,
                                      @RequestBody BookingRequest bookingRequest) {
+
         try {
-            Booking booking = bookingService.bookEstate(estateId, user, bookingRequest);
+            BookingResponseResource booking = bookingService.bookEstate(estateId, user, bookingRequest);
             return ResponseEntity.ok().body(booking);
         } catch (InvalidBookingException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
