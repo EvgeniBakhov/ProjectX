@@ -1,3 +1,5 @@
+Copyright ©Yevhen Bakhov 2021.
+
 ### PROJECT X
 
 This project is a diploma work for the university. This app is created for searching for events and estates. 
@@ -36,8 +38,38 @@ This layer is to expose an API to provide access to service logic for other apps
 
 Roles and privileges system:
 
-Each user has only one role: NORMAL, OWNER, ORGANIZER or ADMIN. Each role has a set of privileges. Privilege - string,
+Each user has only one role: NORMAL, OWNER, ORGANIZER. Each role has a set of privileges. Privilege - string,
 that represents activity allowed by this privilege.
+
+### Launch guide
+
+To run the app you need to install following software:
+
+Java version 11: https://www.oracle.com/java/technologies/javase-jdk11-downloads.html
+MySQL Server: https://dev.mysql.com/downloads/mysql/
+
+To run this app you need to install Java first, to install it correctly use guide.
+The app uses Gradle to assemble project and download dependencies.
+To build this project run:
+- gradlew clean build
+
+To run the app you need to launch MySQL Server on your computer first. After launching, please change db credentials to yours
+in application.yml and make sure that your db uses 3306 port OR change it.
+
+You need to create schema first (change name in application.yml if needed).
+
+
+If connection with db established you can launch the app with:
+
+java -jar <path to builded artifact>.
+
+After launching the app you will see created tables in your db schema added by Hibernate.
+
+By default the app uses port 8080.
+
+Enjoy!
+
+### VERSIONING
 
 ### Version 0.23.0
 Created picture service for retrieving pictures for estates and events.

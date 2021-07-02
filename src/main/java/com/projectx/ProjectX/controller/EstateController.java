@@ -98,7 +98,7 @@ public class EstateController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IOException e) {
-            return ResponseEntity.badRequest().body("Error peristing files");
+            return ResponseEntity.badRequest().body("Error persisting files");
         }
     }
 
