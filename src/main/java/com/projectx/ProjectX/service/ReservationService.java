@@ -53,11 +53,11 @@ public class ReservationService {
     }
 
     private boolean checkPlaces(Event event) {
-        return event.getAvailableSeats() >= 1;
+        return event.getAvailableSeats() > 0;
     }
 
     private boolean checkEsrbRate(User user, Event event) {
-        return user.getAge() > event.getAgeRestrictions().getValue();
+        return user.getAge() >= event.getAgeRestrictions().getValue();
     }
 
     private boolean checkEventStatus(Event event) {
@@ -66,7 +66,7 @@ public class ReservationService {
 
     private boolean checkExistingReservation(Event event, User user) {
         Optional<Reservation> reservation = reservationRepository.getByEventAndUser(event, user);
-        return !reservation.isPresent();
+        return !reservation.isPresent() || reservation.get().getStatus().equals(ReservationStatus.CANCELLED);
     }
 
     private Reservation getDefaultReservation(User user, Event event) {
